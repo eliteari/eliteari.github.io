@@ -1,0 +1,1153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Anime Character Sorter (AniList Top 5)</title>
+  <style>
+    :root{
+      --bg:#0b0f14; --panel:#111826; --panel2:#0f1623; --text:#e8eef7; --muted:#a7b3c7;
+      --border:rgba(255,255,255,.10); --border2:rgba(255,255,255,.14);
+      --accent:#67e8f9; --accent2:#a78bfa; --good:#34d399; --warn:#fbbf24; --bad:#fb7185;
+      --shadow: 0 10px 35px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:radial-gradient(1000px 600px at 15% 10%, rgba(167,139,250,.18), transparent 55%),
+                        radial-gradient(900px 500px at 85% 20%, rgba(103,232,249,.14), transparent 55%),
+                        var(--bg);
+      color:var(--text); font: 15px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    a{color:var(--accent)}
+    header{
+      padding:28px 18px 14px; max-width:1100px; margin:0 auto;
+      display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;
+    }
+    .titleWrap{display:flex; flex-direction:column; gap:6px}
+    h1{margin:0; font-size:22px; letter-spacing:.2px}
+    .sub{color:var(--muted); font-size:13px; max-width:760px}
+    .pillRow{display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:flex-end}
+    .pill{
+      border:1px solid var(--border); background:rgba(255,255,255,.04);
+      padding:7px 10px; border-radius:999px; color:var(--muted); font-size:12px;
+      display:flex; gap:8px; align-items:center;
+    }
+    .dot{width:8px; height:8px; border-radius:99px; background:rgba(255,255,255,.25)}
+    .dot.ok{background:var(--good)}
+    .dot.warn{background:var(--warn)}
+    .dot.bad{background:var(--bad)}
+    main{max-width:1100px; margin:0 auto; padding:0 18px 36px}
+    .panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panelHead{
+      padding:14px 16px;
+      display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+      background:rgba(0,0,0,.20);
+      border-bottom:1px solid var(--border);
+    }
+    .panelHead h2{margin:0; font-size:16px}
+    .panelBody{padding:16px}
+    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+    textarea{
+      width:100%; min-height:130px; resize:vertical;
+      background:rgba(0,0,0,.25); color:var(--text);
+      border:1px solid var(--border); border-radius:14px;
+      padding:12px 12px; outline:none;
+    }
+    textarea:focus{border-color:rgba(103,232,249,.45); box-shadow:0 0 0 3px rgba(103,232,249,.12)}
+    input[type="text"]{
+      background:rgba(0,0,0,.25); color:var(--text);
+      border:1px solid var(--border); border-radius:12px;
+      padding:10px 10px; outline:none; min-width:240px;
+    }
+    input[type="text"]:focus{border-color:rgba(167,139,250,.5); box-shadow:0 0 0 3px rgba(167,139,250,.12)}
+    .btn{
+      border:1px solid var(--border2);
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      color:var(--text);
+      padding:10px 12px; border-radius:12px;
+      cursor:pointer; user-select:none;
+      display:inline-flex; align-items:center; gap:8px;
+      transition:transform .03s ease, border-color .2s ease, background .2s ease;
+    }
+    .btn:hover{border-color:rgba(255,255,255,.22)}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{
+      border-color:rgba(52,211,153,.45);
+      background: linear-gradient(180deg, rgba(52,211,153,.64), rgba(52,211,153,.45));
+    }
+    .btn.primary:hover{
+          border-color: rgba(52,254,50,.95);
+          background: linear-gradient(180deg, rgba(52,211,153,.64), rgba(52,211,153,.64));
+    }
+    .btn.ghost{
+      background:transparent;
+      border-color:var(--border);
+      color:var(--muted);
+    }
+    .btn.bad{
+      border-color:rgba(251,113,133,.40);
+      background:linear-gradient(180deg, rgba(251,113,133,.18), rgba(251,113,133,.06));
+    }
+    .btn:disabled{opacity:.55; cursor:not-allowed}
+    .hint{color:var(--muted); font-size:12px}
+    .hr{height:1px; background:var(--border); margin:14px 0}
+    .progress{
+      width:280px; max-width:100%;
+      height:10px; background:rgba(255,255,255,.06);
+      border:1px solid var(--border); border-radius:999px; overflow:hidden;
+    }
+    .bar{height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--accent2))}
+    .log{
+      white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      background:rgba(0,0,0,.28); border:1px solid var(--border); border-radius:14px;
+      padding:12px; max-height:220px; overflow:auto; color:#dbe7ff; font-size:12px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap:12px;
+    }
+    .card{
+      border:1px solid var(--border);
+      border-radius:16px; overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      box-shadow: 0 8px 18px rgba(0,0,0,.25);
+      display:flex; flex-direction:column;
+      min-height:250px;
+    }
+    .thumb{
+      width:100%; aspect-ratio: 3/4;
+      background:rgba(0,0,0,.35);
+      display:block; object-fit:cover;
+    }
+    .cardBody{
+      padding:10px 10px 12px;
+      display:flex; flex-direction:column; gap:6px;
+      flex:1;
+    }
+    .name{font-weight:650; font-size:13px}
+    .meta{color:var(--muted); font-size:12px; display:flex; gap:6px; flex-wrap:wrap}
+    .meta .tag{border:1px solid var(--border); padding:2px 7px; border-radius:999px; background:rgba(0,0,0,.18)}
+    .cardControls{margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:10px}
+    label.chk{display:flex; align-items:center; gap:8px; color:var(--muted); font-size:12px; cursor:pointer}
+    input[type="checkbox"]{transform:translateY(1px)}
+    .compareWrap{
+      display:grid; grid-template-columns:1fr 70px 1fr; gap:14px; align-items:stretch;
+    }
+    .vs{
+      display:flex; align-items:center; justify-content:center;
+      color:var(--muted); font-weight:800; letter-spacing:.18em;
+      border:1px solid var(--border); border-radius:18px;
+      background:rgba(0,0,0,.20);
+    }
+    .bigChoice{
+      border:1px solid var(--border2);
+      border-radius:22px;
+      overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      cursor:pointer;
+      display:flex; flex-direction:column;
+      min-height:410px;
+      transition:transform .06s ease, border-color .2s ease;
+    }
+    .bigChoice:hover{border-color:rgba(255,255,255,.26)}
+    .bigChoice:active{transform:translateY(1px)}
+    .bigChoice img{width:100%; aspect-ratio: 3/4; object-fit:cover; background:rgba(0,0,0,.35)}
+    .bigChoice .info{padding:12px 14px 14px; display:flex; flex-direction:column; gap:8px; flex:1}
+    .bigChoice .info .name{font-size:15px}
+    .kbs{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:12px;
+      padding:3px 8px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.30);
+      color:var(--text);
+    }
+    .resultsList{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .resRow{
+      display:grid; grid-template-columns: 56px 1fr auto; gap:12px; align-items:center;
+      border:1px solid var(--border); border-radius:16px;
+      background:rgba(0,0,0,.18);
+      overflow:hidden;
+      padding:8px 10px;
+    }
+    .rank{
+      width:44px; height:44px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(103,232,249,.18), rgba(167,139,250,.08));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800;
+    }
+    .resThumb{
+      width:44px; height:58px; border-radius:12px; object-fit:cover;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.30);
+    }
+    .resMain{display:flex; gap:10px; align-items:center}
+    .resName{font-weight:700}
+    .resAnime{color:var(--muted); font-size:12px}
+    .rightActions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+    .toast{
+      position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
+      background:rgba(0,0,0,.70); border:1px solid var(--border); border-radius:999px;
+      padding:10px 12px; color:var(--text); box-shadow: var(--shadow);
+      display:none; gap:10px; align-items:center;
+      max-width:min(860px, calc(100vw - 20px));
+    }
+    .toast.show{display:flex}
+    .small{font-size:12px; color:var(--muted)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+    @media (max-width: 860px){
+      .compareWrap{grid-template-columns:1fr; gap:10px}
+      .vs{display:none}
+      .bigChoice{min-height:360px}
+    }
+
+    /* Progress bar (sorting) */
+    .progressWrap{margin-top:10px; display:flex; flex-direction:column; gap:8px;}
+    .progressTop{display:flex; justify-content:space-between; align-items:center; gap:12px; color:var(--muted); font-size:12px;}
+    .progressTrack{width:100%; height:10px; background:rgba(255,255,255,.08); border:1px solid var(--border); border-radius:999px; overflow:hidden;}
+    .progressFill{height:100%; width:0%; background:linear-gradient(90deg, rgba(103,232,249,.95), rgba(167,139,250,.95)); border-radius:999px;}
+
+	 #sortHint { display: none !important; }
+
+  </style>
+</head>
+<body>
+<header>
+  <div class="titleWrap">
+    <h1>Anime Character Sorter</h1>
+    <div class="sub">
+        <span class="small">(Made by <a href="https://www.youtube.com/@eliteari" target="_blank" rel="noopener noreferrer">EliteAri</a> via ChatGPT - Data source: AniList GraphQL)</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Phase 1 -->
+  <section class="panel" id="panelInput">
+  <div class="panelHead">
+    <div>
+      <h2 style="margin:0">1) Enter your list of anime:</h2>
+      <div class="hint" style="margin-top:6px">
+        NOTE: you may run into issues with &gt;30 anime.<br>
+        This website will retrieve the 5 most popular characters from each anime and they will face off in 1v1 matches, ultimately resulting in an ordered list of your favorites.
+      </div>
+    </div>
+  </div>
+    <div class="panelBody">
+      <div class="hint">One anime title per line. Use common English/Romaji titles (e.g. "Jujutsu Kaisen", "Steins;Gate").</div>
+      <div style="margin-top:10px; margin-bottom:10px">
+        <textarea id="animeInput" placeholder="One per line...
+Fullmetal Alchemist: Brotherhood
+Attack on Titan
+Haikyuu!!"></textarea>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="btnFetch">Fetch characters</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="row" style="justify-content:space-between">
+        <div class="row" style="gap:10px">
+          <div class="progress" aria-label="progress">
+            <div class="bar" id="progBar"></div>
+          </div>
+          <div class="hint" id="progText">Ready.</div>
+        </div>
+        <div class="row" style="gap:10px">
+          <button class="btn ghost" id="btnClear">Clear data</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="log" id="logBox" aria-label="log"></div>
+    </div>
+  </section>
+
+  <div style="height:14px"></div>
+
+  <!-- Phase 2 -->
+  <section class="panel" id="panelReview" style="display:none">
+    <div class="panelHead">
+      <h2>2) Remove characters you don't recognize</h2>
+      <div class="row">
+        <input type="text" id="filterInput" placeholder="Filter characters..." />
+        <button class="btn ghost" id="btnAll">Select all</button>
+        <button class="btn ghost" id="btnNone">Select none</button>
+        <button class="btn primary" id="btnStartSort">Start sorting</button>
+      </div>
+    </div>
+    <div class="panelBody">
+      <div class="hint" id="reviewHint"></div>
+      <div class="hr"></div>
+      <div class="grid" id="reviewGrid"></div>
+    </div>
+  </section>
+
+  <div style="height:14px"></div>
+
+  <!-- Phase 3 -->
+  <section class="panel" id="panelSort" style="display:none">
+    <div class="panelHead">
+      <h2>3) Pick your favorite in each matchup</h2>
+      <div class="row">
+	    <div class="pill"><span class="dot ok"></span><span class="mono" id="sortStats">0 comparisons</span></div>
+        <button class="btn ghost" id="btnRestartSort">Restart sort</button>
+        <button class="btn bad" id="btnAbort">Abort</button>
+      </div>
+    </div>
+    <div class="panelBody">
+	  <div class="hint" id="sortHint"></div>
+      <div class="progressWrap" aria-label="sorting progress">
+        <div class="progressTop">
+          <span class="mono" id="sortProgressPct">0%</span>
+          <span class="mono" id="sortProgressCount">0 / 0</span>
+        </div>
+        <div class="progressTrack"><div class="progressFill" id="sortProgressFill"></div></div>
+      </div>
+      <div class="hr"></div>
+
+      <div class="compareWrap" id="compareWrap">
+        <div class="bigChoice" id="choiceLeft" role="button" tabindex="0" aria-label="choose left">
+          <img id="imgLeft" alt="">
+          <div class="info">
+            <div class="name" id="nameLeft">�</div>
+            <div class="meta" id="metaLeft"></div>
+            <div class="kbs"><span class="small"><kbd>Click</kbd> or type</span> <kbd>left arrow</kbd></div>
+          </div>
+        </div>
+
+        <div class="vs">VS</div>
+
+        <div class="bigChoice" id="choiceRight" role="button" tabindex="0" aria-label="choose right">
+          <img id="imgRight" alt="">
+          <div class="info">
+            <div class="name" id="nameRight">�</div>
+            <div class="meta" id="metaRight"></div>
+            <div class="kbs"><span class="small"><kbd>Click</kbd> or type</span> <kbd>right arrow</kbd></div>
+          </div>
+        </div>
+      </div>
+
+   	  <button class="btn ghost" id="btnUndo" disabled>Undo</button>
+
+      <div class="hr"></div>
+      <div class="row" style="justify-content:space-between">
+        <div class="row">
+          <button class="btn ghost" id="btnSkipAnime">Hide anime tags</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div style="height:14px"></div>
+
+  <!-- Phase 4 -->
+  <section class="panel" id="panelResults" style="display:none">
+    <div class="panelHead">
+      <h2>4) Results</h2>
+      <div class="row">
+        <button class="btn ghost" id="btnUndoResults" disabled>Undo</button>
+        <button class="btn ghost" id="btnCopyJSON">Copy JSON</button>
+        <button class="btn ghost" id="btnDownloadCSV">Download CSV</button>
+        <button class="btn primary" id="btnStartOver">Start over</button>
+      </div>
+    </div>
+    <div class="panelBody">
+      <div class="hint" id="resultsHint"></div>
+      <div class="hr"></div>
+      <div class="resultsList" id="resultsList"></div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+<script>
+(() => {
+  // -----------------------------
+  // Utilities
+  // -----------------------------
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  function toast(msg, ms=1800){
+    const t = $("#toast");
+    $("#toastMsg").textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => t.classList.remove("show"), ms);
+  }
+
+  function log(line){
+    const box = $("#logBox");
+    box.textContent += line + "\n";
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+  function makePlaceholderDataUrl(label){
+    const bg1 = "#101827", bg2 = "#0b1220", fg = "#e8eef7";
+    const text = (label || "?").trim().slice(0, 2).toUpperCase();
+    const svg =
+`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800">
+  <defs>
+    <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="${bg1}"/>
+      <stop offset="1" stop-color="${bg2}"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#g)"/>
+  <circle cx="300" cy="330" r="140" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+  <text x="300" y="360" text-anchor="middle" font-size="110" font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial" fill="${fg}" font-weight="700">${text}</text>
+  <text x="300" y="520" text-anchor="middle" font-size="26" font-family="ui-monospace, Menlo, Consolas, monospace" fill="rgba(232,238,247,0.75)">image unavailable</text>
+</svg>`;
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+
+  function safeImg(url, fallbackLabel){
+    return url || makePlaceholderDataUrl(fallbackLabel);
+  }
+
+  function shuffle(arr){
+    for(let i=arr.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+    return arr;
+  }
+
+  // -----------------------------
+  // AniList GraphQL
+  // -----------------------------
+  const API_URL = "https://graphql.anilist.co"; // AniList GraphQL endpoint :contentReference[oaicite:2]{index=2}
+  async function anilistRequest(query, variables){
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type":"application/json", "Accept":"application/json" },
+      body: JSON.stringify({ query, variables })
+    });
+
+    // Basic backoff on rate-limits
+    if(res.status === 429){
+      const retryAfter = Number(res.headers.get("Retry-After") || "2");
+      await sleep(clamp(retryAfter, 1, 8) * 1000);
+      return anilistRequest(query, variables);
+    }
+
+    const json = await res.json().catch(() => ({}));
+    if(!res.ok || json.errors){
+      const msg = (json.errors && json.errors[0] && json.errors[0].message) ? json.errors[0].message : ("HTTP " + res.status);
+      throw new Error(msg);
+    }
+    return json.data;
+  }
+
+  // Fetch a single anime (best match by search) and its top 5 characters by favourites.
+  const Q_MEDIA_CHARS = `
+    query ($search: String!) {
+      Media(search: $search, type: ANIME) {
+        id
+        siteUrl
+        title { userPreferred romaji english native }
+        coverImage { large }
+        characters(perPage: 5, sort: [FAVOURITES_DESC]) {
+          edges {
+            node {
+              id
+              siteUrl
+              name { full native userPreferred }
+              image { large medium }
+            }
+            role
+          }
+        }
+      }
+    }
+  `;
+
+  // -----------------------------
+  // App State
+  // -----------------------------
+  const state = {
+    animeTitles: [],
+    animeResults: [],        // [{title, siteUrl, coverImage, characters:[...] }]
+    characters: [],          // flattened unique list
+    keepMap: new Map(),      // charId -> boolean
+    hideAnimeTags: false,
+    sorter: {
+      queue: [],
+      current: null, // {left,right,i,j,merged}
+      comparisons: 0,
+      totalChars: 0,
+      round: 0,
+            placementsDone: 0,
+      totalPlacements: 0,
+undoStack: [],
+      redoStack: []
+    },
+    finalRanking: []
+  };
+
+  function showPanel(id){
+    ["#panelInput","#panelReview","#panelSort","#panelResults"].forEach(sel => {
+      $(sel).style.display = (sel === id) ? "" : "none";
+    });
+  }
+
+  // -----------------------------
+  // Phase 1: Fetch data
+  // -----------------------------
+  async function fetchAll(){
+    const raw = $("#animeInput").value || "";
+    const titles = raw.split("\n").map(s => s.trim()).filter(Boolean);
+    state.animeTitles = titles;
+
+    $("#logBox").textContent = "";
+    $("#progBar").style.width = "0%";
+    $("#progText").textContent = "Starting�";
+
+    state.animeResults = [];
+    state.characters = [];
+    state.keepMap.clear();
+
+    if(!titles.length){
+      toast("Paste at least one anime title.");
+      return;
+    }
+
+    log(`Using AniList GraphQL at ${API_URL}`);
+    log(`Fetching: ${titles.length} title(s)`);
+    log("");
+
+    const allCharsById = new Map();
+    let done = 0;
+
+    for(const title of titles){
+      try{
+        $("#progText").textContent = `Searching: ${title}`;
+        log(`Looking for ${title}`);
+        const data = await anilistRequest(Q_MEDIA_CHARS, { search: title });
+
+        if(!data || !data.Media){
+          log(`  ! No match found.`);
+          continue;
+        }
+
+        const m = data.Media;
+        const animeTitle = m.title?.userPreferred || m.title?.romaji || m.title?.english || m.title?.native || title;
+
+        const chars = (m.characters?.edges || [])
+          .map(e => e?.node ? ({
+            id: e.node.id,
+            name: e.node.name?.userPreferred || e.node.name?.full || e.node.name?.native || "Unknown",
+            image: e.node.image?.large || e.node.image?.medium || null,
+            siteUrl: e.node.siteUrl || null,
+            role: e.role || null,
+            animeTitle,
+            animeUrl: m.siteUrl || null
+          }) : null)
+          .filter(Boolean);
+
+        state.animeResults.push({
+          id: m.id,
+          title: animeTitle,
+          siteUrl: m.siteUrl || null,
+          coverImage: m.coverImage?.large || null,
+          characters: chars
+        });
+
+        log(`  Matched: ${animeTitle}`);
+        if(chars.length){
+          for(const c of chars){
+            if(!allCharsById.has(c.id)){
+              allCharsById.set(c.id, c);
+            }else{
+              // If character appears multiple times across anime searches, keep a combined animeTitle list
+              const existing = allCharsById.get(c.id);
+              if(existing.animeTitle !== c.animeTitle){
+                existing.animeTitle = existing.animeTitle + " � " + c.animeTitle;
+              }
+            }
+          }
+          log(`  Characters: ${chars.map(c=>c.name).join(", ")}`);
+        }else{
+          log(`  ! No characters returned (or not enough data).`);
+        }
+
+      }catch(err){
+        log(`  ? Error: ${err.message}`);
+      }
+
+      done++;
+      const pct = Math.round((done / titles.length) * 100);
+      $("#progBar").style.width = pct + "%";
+      $("#progText").textContent = `Progress: ${done}/${titles.length}`;
+
+      // Small pacing to be polite to the API.
+      await sleep(900);
+    }
+
+    state.characters = Array.from(allCharsById.values());
+    // default keep = true
+    for(const c of state.characters) state.keepMap.set(c.id, true);
+
+    log("");
+    log(`Done. Total unique characters loaded: ${state.characters.length}`);
+
+    if(state.characters.length === 0){
+      toast("No characters loaded. Try different titles.");
+      return;
+    }
+
+    // Move to review
+    buildReviewUI();
+    showPanel("#panelReview");
+  }
+
+  // -----------------------------
+  // Phase 2: Review & remove unknowns
+  // -----------------------------
+  function buildReviewUI(){
+    $("#filterInput").value = "";
+    $("#reviewHint").textContent = `Loaded ${state.characters.length} unique character(s). Uncheck any you don't recognize.`;
+    renderReviewGrid();
+  }
+
+  function renderReviewGrid(){
+    const q = $("#filterInput").value.trim().toLowerCase();
+    const grid = $("#reviewGrid");
+    grid.innerHTML = "";
+
+    const visible = state.characters.filter(c => {
+      if(!q) return true;
+      return (c.name || "").toLowerCase().includes(q) || (c.animeTitle || "").toLowerCase().includes(q);
+    });
+
+    for(const c of visible){
+      const keep = state.keepMap.get(c.id) !== false;
+      const card = document.createElement("div");
+      card.className = "card";
+      const imgSrc = safeImg(c.image, c.name);
+      card.innerHTML = `
+        <img class="thumb" src="${imgSrc}" alt="${escapeHtml(c.name)}" loading="lazy" referrerpolicy="no-referrer" />
+        <div class="cardBody">
+          <div class="name">${escapeHtml(c.name)}</div>
+          <div class="meta">
+            ${state.hideAnimeTags ? "" : `<span class="tag">${escapeHtml(c.animeTitle)}</span>`}
+          </div>
+          <div class="cardControls">
+            <label class="chk">
+              <input type="checkbox" data-id="${c.id}" ${keep ? "checked" : ""} />
+              keep
+            </label>
+            <button class="btn ghost" data-open="${c.siteUrl ? c.siteUrl : ""}" ${c.siteUrl ? "" : "disabled"} title="Open on AniList">Open</button>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    }
+
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    }[c]));
+  }
+
+  // -----------------------------
+  
+// -----------------------------
+// Phase 3: Interactive sorter (merge-sort style)
+//   Better undo: global snapshots, works across merges + even from results.
+// -----------------------------
+
+function isInSortFlow(){
+  return $("#panelSort").style.display !== "none" || $("#panelResults").style.display !== "none";
+}
+
+function updateUndoButtons(){
+  const canUndo = state.sorter.undoStack.length > 0;
+  const b1 = $("#btnUndo");
+  const b2 = $("#btnUndoResults");
+  if(b1) b1.disabled = !canUndo;
+  if(b2) b2.disabled = !canUndo;
+}
+
+function snapshotSorter(phase){
+  // Note: we only shallow-copy characters; that's fine because character objects are immutable in this app.
+  const s = state.sorter;
+  return {
+    phase,
+    sorter: {
+      queue: s.queue.map(g => g.slice()),
+      current: s.current ? {
+        left: s.current.left.slice(),
+        right: s.current.right.slice(),
+        i: s.current.i,
+        j: s.current.j,
+        merged: s.current.merged.slice(),
+        round: s.current.round
+      } : null,
+      comparisons: s.comparisons,
+      totalChars: s.totalChars,
+      round: s.round,
+      placementsDone: s.placementsDone,
+      totalPlacements: s.totalPlacements
+    },
+    finalRanking: state.finalRanking ? state.finalRanking.slice() : []
+  };
+}
+
+function restoreSorter(snap){
+  const s = snap.sorter;
+  state.sorter.queue = s.queue.map(g => g.slice());
+  state.sorter.current = s.current ? {
+    left: s.current.left.slice(),
+    right: s.current.right.slice(),
+    i: s.current.i,
+    j: s.current.j,
+    merged: s.current.merged.slice(),
+    round: s.current.round
+  } : null;
+  state.sorter.comparisons = s.comparisons;
+  state.sorter.totalChars = s.totalChars;
+  state.sorter.round = s.round;
+  state.sorter.placementsDone = s.placementsDone || 0;
+  state.sorter.totalPlacements = s.totalPlacements || 0;
+  state.finalRanking = (snap.finalRanking || []).slice();
+}
+
+function pushUndo(phase){
+  state.sorter.undoStack.push(snapshotSorter(phase));
+  // cap to avoid unbounded memory; tweak as you like
+  const CAP = 5000;
+  if(state.sorter.undoStack.length > CAP){
+    state.sorter.undoStack.shift();
+  }
+  updateUndoButtons();
+}
+
+function updateSortStats(){
+  $("#sortStats").textContent = `${state.sorter.comparisons} comparisons of ${state.sorter.totalChars} total chars`;
+  updateProgress();
+}
+
+function computeTotalPlacements(n){
+  // Deterministic "work units" for this app's merge schedule.
+  // Each merge of sizes a+b moves (a+b) items into a merged list.
+  const q = Array(n).fill(1);
+  let total = 0;
+  while(q.length > 1){
+    const a = q.shift();
+    const b = q.shift();
+    if(typeof b !== "number"){
+      // Odd group out: we still "merge" it with an empty group, moving `a` items.
+      total += a;
+      q.push(a);
+      continue;
+    }
+    total += (a + b);
+    q.push(a + b);
+  }
+  return total;
+}
+
+function updateProgress(){
+  const done = state.sorter.placementsDone || 0;
+  const total = state.sorter.totalPlacements || 0;
+  const pct = total ? Math.min(100, Math.round((done / total) * 100)) : 0;
+
+  const fill = $("#sortProgressFill");
+  const pctEl = $("#sortProgressPct");
+  const cntEl = $("#sortProgressCount");
+  if(fill) fill.style.width = pct + "%";
+  if(pctEl) pctEl.textContent = pct + "%";
+  if(cntEl) cntEl.textContent = `${done} / ${total}`;
+}
+
+
+function updateSortHint(){
+  const cur = state.sorter.current;
+  if(!cur){
+    $("#sortHint").textContent = "";
+    return;
+  }
+  const leftRemain = cur.left.length - cur.i;
+  const rightRemain = cur.right.length - cur.j;
+  $("#sortHint").textContent =
+    `Merging two groups: ${cur.left.length} vs ${cur.right.length}. ` +
+    `Remaining this merge: ${leftRemain} vs ${rightRemain}. Click on your favorite each time.`;
+}
+
+function setCurrentMerge(left, right){
+  state.sorter.round += 1;
+  state.sorter.current = {
+    left,
+    right,
+    i: 0,
+    j: 0,
+    merged: [],
+    round: state.sorter.round
+  };
+}
+
+function renderComparison(){
+  const cur = state.sorter.current;
+  if(!cur) return;
+
+  const L = cur.left[cur.i];
+  const R = cur.right[cur.j];
+
+  $("#imgLeft").src = safeImg(L.image, L.name);
+  $("#nameLeft").textContent = L.name;
+  $("#metaLeft").innerHTML = state.hideAnimeTags ? "" : `<span class="tag">${escapeHtml(L.animeTitle)}</span>`;
+
+  $("#imgRight").src = safeImg(R.image, R.name);
+  $("#nameRight").textContent = R.name;
+  $("#metaRight").innerHTML = state.hideAnimeTags ? "" : `<span class="tag">${escapeHtml(R.animeTitle)}</span>`;
+}
+
+function stepSort(){
+  // Progress the algorithm until the next user decision is needed (or results).
+  while(true){
+    const q = state.sorter.queue;
+
+    // Completed all merges
+    if(q.length === 1 && !state.sorter.current){
+      state.finalRanking = q[0].slice();
+      showResults();           // moves to results panel
+      updateUndoButtons();     // keep undo enabled on results screen
+      return;
+    }
+
+    // Need a merge to work on
+    if(!state.sorter.current){
+      const left = q.shift();
+      const right = q.shift() || [];
+      setCurrentMerge(left, right);
+      updateSortHint();
+    }
+
+    const cur = state.sorter.current;
+
+    // If one side is exhausted, finish merge automatically and keep looping
+    if(cur.i >= cur.left.length){
+      const k = cur.right.length - cur.j;
+      if(k > 0){
+        cur.merged.push(...cur.right.slice(cur.j));
+        state.sorter.placementsDone += k;
+      }
+      updateProgress();
+      q.push(cur.merged);
+      state.sorter.current = null;
+      continue;
+    }
+    if(cur.j >= cur.right.length){
+      const k = cur.left.length - cur.i;
+      if(k > 0){
+        cur.merged.push(...cur.left.slice(cur.i));
+        state.sorter.placementsDone += k;
+      }
+      updateProgress();
+      q.push(cur.merged);
+      state.sorter.current = null;
+      continue;
+    }
+
+    // Need user input
+    updateSortHint();
+    renderComparison();
+    updateUndoButtons();
+    return;
+  }
+}
+
+function startSorting(){
+  const kept = state.characters.filter(c => state.keepMap.get(c.id) !== false);
+  if(kept.length < 2){
+    toast("Keep at least 2 characters to sort.");
+    return;
+  }
+
+  const items = shuffle(kept.slice());
+  state.sorter.queue = items.map(x => [x]);
+  state.sorter.current = null;
+  state.sorter.comparisons = 0;
+  state.sorter.totalChars = items.length;
+  state.sorter.round = 0;
+  state.sorter.placementsDone = 0;
+  state.sorter.totalPlacements = computeTotalPlacements(items.length);
+  state.sorter.undoStack = [];
+  state.sorter.redoStack = [];
+
+  showPanel("#panelSort");
+  updateSortStats();
+  updateUndoButtons();
+
+  // Make sure the first matchup renders
+  stepSort();
+}
+
+function choose(side){
+  const cur = state.sorter.current;
+  if(!cur) return;
+
+  // Snapshot BEFORE the choice (so undo returns to exactly what you saw)
+  pushUndo("sort");
+  state.sorter.redoStack = [];
+
+  if(side === "left"){
+    cur.merged.push(cur.left[cur.i]);
+    cur.i++;
+  }else{
+    cur.merged.push(cur.right[cur.j]);
+    cur.j++;
+  }
+
+  state.sorter.placementsDone += 1;
+
+  state.sorter.comparisons++;
+  updateSortStats();
+
+  stepSort();
+}
+
+function undo(){
+  if(!state.sorter.undoStack.length) return;
+
+  // Save current for potential redo (even though we don't expose a redo button)
+  state.sorter.redoStack.push(snapshotSorter($("#panelResults").style.display !== "none" ? "results" : "sort"));
+
+  const snap = state.sorter.undoStack.pop();
+  restoreSorter(snap);
+
+  if(snap.phase === "results"){
+    showResults();
+  }else{
+    showPanel("#panelSort");
+    updateSortStats();
+    stepSort(); // will render the correct matchup
+  }
+
+  updateUndoButtons();
+  toast("Undid last step.");
+}
+
+$("#btnUndo").addEventListener("click", undo);
+$("#btnUndoResults").addEventListener("click", undo);
+
+// -----------------------------
+  // Phase 4: Results
+  // -----------------------------
+  function showResults(){
+    showPanel("#panelResults");
+
+    const n = state.finalRanking.length;
+    $("#resultsHint").textContent = `Ranked ${n} character(s). You can copy JSON or download CSV.`;
+
+    const list = $("#resultsList");
+    list.innerHTML = "";
+
+    state.finalRanking.forEach((c, idx) => {
+      const row = document.createElement("div");
+      row.className = "resRow";
+      row.innerHTML = `
+        <div class="rank">#${idx+1}</div>
+        <div class="resMain">
+          <img class="resThumb" src="${safeImg(c.image, c.name)}" alt="${escapeHtml(c.name)}" loading="lazy" referrerpolicy="no-referrer"/>
+          <div>
+            <div class="resName">${escapeHtml(c.name)}</div>
+            <div class="resAnime">${escapeHtml(c.animeTitle)}</div>
+          </div>
+        </div>
+        <div class="rightActions">
+          <button class="btn ghost" ${c.siteUrl ? `data-open="${c.siteUrl}"` : "disabled"}>AniList</button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+
+
+    updateUndoButtons();
+  }
+
+  function rankingAsJSON(){
+    return state.finalRanking.map((c, i) => ({
+      rank: i+1,
+      id: c.id,
+      name: c.name,
+      anime: c.animeTitle,
+      image: c.image || null,
+      url: c.siteUrl || null
+    }));
+  }
+
+  function downloadCSV(){
+    const rows = [["rank","id","name","anime","image","url"]];
+    rankingAsJSON().forEach(r => rows.push([r.rank, r.id, r.name, r.anime, r.image||"", r.url||""]));
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "character-ranking.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  }
+
+  // -----------------------------
+  // Events
+  // -----------------------------
+  $("#btnFetch").addEventListener("click", () => {
+    showPanel("#panelInput");
+    fetchAll().catch(err => {
+      log("Fatal error: " + err.message);
+      toast("Error fetching. Check the log.");
+    });
+  });
+
+  $("#btnClear").addEventListener("click", () => {
+    state.animeTitles = [];
+    state.animeResults = [];
+    state.characters = [];
+    state.keepMap.clear();
+    state.finalRanking = [];
+    $("#logBox").textContent = "";
+    $("#progBar").style.width = "0%";
+    $("#progText").textContent = "Ready.";
+    showPanel("#panelInput");
+    toast("Cleared.");
+  });
+
+  $("#filterInput").addEventListener("input", renderReviewGrid);
+
+  $("#btnAll").addEventListener("click", () => {
+    state.characters.forEach(c => state.keepMap.set(c.id, true));
+    renderReviewGrid();
+    toast("Selected all.");
+  });
+
+  $("#btnNone").addEventListener("click", () => {
+    state.characters.forEach(c => state.keepMap.set(c.id, false));
+    renderReviewGrid();
+    toast("Selected none.");
+  });
+
+  $("#btnStartSort").addEventListener("click", startSorting);
+
+  $("#reviewGrid").addEventListener("change", (e) => {
+    const cb = e.target;
+    if(cb && cb.matches('input[type="checkbox"][data-id]')){
+      const id = Number(cb.getAttribute("data-id"));
+      state.keepMap.set(id, cb.checked);
+      const kept = state.characters.filter(c => state.keepMap.get(c.id) !== false).length;
+      $("#reviewHint").textContent = `Keeping ${kept} character(s) out of ${state.characters.length}.`;
+    }
+  });
+
+  // Open AniList links
+  document.body.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-open]");
+    if(btn){
+      const url = btn.getAttribute("data-open");
+      if(url) window.open(url, "_blank", "noopener,noreferrer");
+    }
+  });
+
+  // Sorting choices
+  $("#choiceLeft").addEventListener("click", () => choose("left"));
+  $("#choiceRight").addEventListener("click", () => choose("right"));
+  $("#choiceLeft").addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " ") choose("left"); });
+  $("#choiceRight").addEventListener("keydown", (e) => { if(e.key === "Enter" || e.key === " ") choose("right"); });
+
+  document.addEventListener("keydown", (e) => {
+  // Global undo (Cmd/Ctrl+Z) during sorting + results.
+  const isUndo = (e.key === "z" || e.key === "Z") && (e.metaKey || e.ctrlKey);
+  if(isUndo && isInSortFlow()){
+    e.preventDefault();
+    undo();
+    return;
+  }
+
+  if($("#panelSort").style.display === "none") return;
+  const k = e.key.toLowerCase();
+  if(k === "a" || e.key === "ArrowLeft") { e.preventDefault(); choose("left"); }
+  if(k === "d" || e.key === "ArrowRight") { e.preventDefault(); choose("right"); }
+});
+
+  $("#btnRestartSort").addEventListener("click", () => {
+    toast("Restarted sorting.");
+    startSorting();
+  });
+
+  $("#btnAbort").addEventListener("click", () => {
+    state.sorter.undoStack = [];
+    state.sorter.redoStack = [];
+    state.sorter.current = null;
+    state.sorter.queue = [];
+    updateUndoButtons();
+    showPanel("#panelReview");
+    toast("Aborted sorting.");
+  });
+
+  $("#btnSkipAnime").addEventListener("click", () => {
+    state.hideAnimeTags = !state.hideAnimeTags;
+    $("#btnSkipAnime").textContent = state.hideAnimeTags ? "Show anime tags" : "Hide anime tags";
+    // Update current compare + review view quickly
+    if($("#panelReview").style.display !== "none") renderReviewGrid();
+    if($("#panelSort").style.display !== "none") renderComparison();
+    toast(state.hideAnimeTags ? "Anime tags hidden." : "Anime tags shown.");
+  });
+
+  $("#btnCopyJSON").addEventListener("click", async () => {
+    const json = JSON.stringify(rankingAsJSON(), null, 2);
+    try{
+      await navigator.clipboard.writeText(json);
+      toast("Copied JSON to clipboard.");
+    }catch{
+      // fallback
+      const ta = document.createElement("textarea");
+      ta.value = json; document.body.appendChild(ta);
+      ta.select(); document.execCommand("copy");
+      ta.remove();
+      toast("Copied JSON (fallback).");
+    }
+  });
+
+  $("#btnDownloadCSV").addEventListener("click", () => {
+    downloadCSV();
+    toast("CSV download started.");
+  });
+
+  $("#btnStartOver").addEventListener("click", () => {
+    showPanel("#panelInput");
+    toast("Back to input.");
+  });
+
+  // Initial UI state
+  $("#logBox").textContent = "\n";
+})();
+</script>
+</body>
+</html>
+
