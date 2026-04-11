@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Anime Tier List</title>
+  <style>
+    :root{
+      --bg:#0f1115;
+      --panel:#171a21;
+      --panel-2:#1d212a;
+      --text:#f2f4f8;
+      --muted:#a8b0bf;
+      --border:rgba(255,255,255,.10);
+      --border-strong:rgba(255,255,255,.18);
+      --shadow:0 14px 30px rgba(0,0,0,.28);
+      --radius:18px;
+      --s:#ff7f7f;
+      --a:#ffbf7f;
+      --b:#ffdf7f;
+      --c:#ffff7f;
+      --d:#bfff7f;
+      --unsorted:#8792a2;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+    header,main{max-width:1260px;margin:0 auto;padding:18px}
+    header{padding-top:24px;padding-bottom:8px}
+    h1,h2,h3,p{margin:0}
+    .sub{margin-top:6px;color:var(--muted);font-size:13px}
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .panel + .panel{margin-top:16px}
+    .panelHead{
+      padding:14px 16px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .panelBody{padding:16px}
+    .hint,.small{color:var(--muted);font-size:12px}
+    .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    textarea,input[type="text"]{
+      width:100%;
+      background:var(--panel-2);
+      color:var(--text);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px 13px;
+      outline:none;
+      font:inherit;
+    }
+    textarea{min-height:140px;resize:vertical}
+    textarea:focus,input[type="text"]:focus{border-color:var(--border-strong)}
+    .btn{
+      background:var(--panel-2);
+      color:var(--text);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      font:inherit;
+      transition:.15s ease;
+    }
+    .btn:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+    .btn.primary{background:#f2f4f8;color:#11151c;border-color:transparent;font-weight:650}
+    .btn.ghost{color:var(--muted)}
+    .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .hr{height:1px;background:var(--border);margin:14px 0}
+    .progress{
+      width:280px;max-width:100%;height:10px;
+      border-radius:999px;background:var(--panel-2);border:1px solid var(--border);overflow:hidden
+    }
+    .bar{height:100%;width:0%;background:#f2f4f8}
+    .log{
+      white-space:pre-wrap;
+      font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      background:var(--panel-2);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+      min-height:130px;
+      max-height:240px;
+      overflow:auto;
+    }
+    .reviewToolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+    .card{
+      background:var(--panel-2);
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:310px;
+    }
+    .thumb{width:100%;aspect-ratio:3/4;object-fit:cover;background:#0a0d12}
+    .cardBody{padding:10px;display:flex;flex-direction:column;gap:6px;flex:1}
+    .name{font-weight:700;font-size:13px;line-height:1.25}
+    .meta,.genres{font-size:12px;color:var(--muted);line-height:1.25}
+    .cardControls{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto}
+    .chk{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;cursor:pointer}
+    .tierBoard{display:flex;flex-direction:column;gap:14px}
+    .tierRow{
+      display:grid;
+      grid-template-columns:92px 1fr;
+      gap:10px;
+      align-items:stretch;
+    }
+    .tierLabel{
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      font-weight:800;
+      font-size:28px;
+      color:#171a21;
+      min-height:148px;
+      border:1px solid rgba(0,0,0,.08);
+    }
+    .tierDrop{
+      background:var(--panel-2);
+      border:2px dashed var(--border);
+      border-radius:18px;
+      min-height:148px;
+      padding:10px 24px 10px 10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-content:flex-start;
+      transition:.12s ease;
+    }
+    .tierDrop.over{border-color:#fff;transform:scale(1.005)}
+    .tierDrop.empty::after{
+      content:attr(data-empty);
+      color:var(--muted);
+      font-size:12px;
+      align-self:center;
+      margin:auto;
+    }
+    .tierCard{
+      width:132px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      border-radius:14px;
+      overflow:hidden;
+      cursor:grab;
+      user-select:none;
+    }
+    .tierCard.dragging{opacity:.45;transform:scale(.98)}
+    .tierCard img{width:100%;aspect-ratio:3/4;object-fit:cover;background:#0a0d12;display:block}
+    .tierInfo{padding:8px}
+    .tierInfo .name{font-size:12px}
+    .tierInfo .meta,.tierInfo .genres{font-size:11px}
+    .tierFooter{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+    .countPill{padding:6px 10px;border-radius:999px;background:var(--panel-2);border:1px solid var(--border);font-size:12px;color:var(--muted)}
+    .toast{
+      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+      background:rgba(11,13,17,.96);border:1px solid var(--border);
+      border-radius:999px;padding:10px 14px;display:none;box-shadow:var(--shadow);font-size:13px
+    }
+    .toast.show{display:block}
+    a{color:inherit}
+    @media (max-width: 760px){
+      .tierRow{grid-template-columns:1fr}
+      .tierLabel{min-height:54px;font-size:24px}
+      .tierDrop{min-height:140px}
+      .tierCard{width:116px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Anime Tier List</h1>
+  <div class="sub">Enter anime, review matches, then drag each title into S / A / B / C / D. Data source: AniList GraphQL.</div>
+</header>
+
+<main>
+  <section class="panel" id="panelInput">
+    <div class="panelHead">
+      <div>
+        <h2>1) Enter your list of anime</h2>
+        <div class="hint" style="margin-top:6px">Paste one anime title per line. This site will fetch each anime's cover image, then you’ll be able to create a tier list. NOTE: you may run into issues with very large lists (>75). </div>
+      </div>
+    </div>
+    <div class="panelBody">
+      <div class="hint">Use common English/Romaji titles.</div>
+      <div style="margin:10px 0 12px">
+        <textarea id="animeInput" placeholder="One per line...
+Fullmetal Alchemist: Brotherhood
+Attack on Titan
+Haikyuu!!"></textarea>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="btnFetch">Fetch anime</button>
+        <button class="btn ghost" id="btnClear">Clear data</button>
+      </div>
+      <div class="hr"></div>
+      <div class="row" style="justify-content:space-between">
+        <div class="row">
+          <div class="progress"><div class="bar" id="progBar"></div></div>
+          <div class="hint" id="progText">Ready.</div>
+        </div>
+      </div>
+      <div style="margin-top:12px" class="log" id="logBox"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panelReview" style="display:none">
+    <div class="panelHead">
+      <div>
+        <h2>2) Remove anime you don't want to include</h2>
+        <div class="hint" id="reviewHint" style="margin-top:6px"></div>
+      </div>
+      <div class="reviewToolbar">
+        <input type="text" id="filterInput" placeholder="Filter anime..." style="width:220px" />
+        <button class="btn ghost" id="btnAll">Select all</button>
+        <button class="btn ghost" id="btnNone">Select none</button>
+        <button class="btn primary" id="btnStartTier">Build tier list</button>
+      </div>
+    </div>
+    <div class="panelBody">
+      <div class="grid" id="reviewGrid"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panelTier" style="display:none">
+    <div class="panelHead">
+      <div>
+        <h2>3) Drag anime into tiers</h2>
+        <div class="hint" style="margin-top:6px">Drag cards between tiers. Everything starts in <strong>To Sort</strong>.</div>
+      </div>
+      <div class="row">
+        <div class="countPill" id="tierSummary">0 anime</div>
+        <button class="btn ghost" id="btnResetTiers">Reset tiers</button>
+        <button class="btn ghost" id="btnCopyJSON">Copy JSON</button>
+        <button class="btn ghost" id="btnDownloadJSON">Download JSON</button>
+      </div>
+    </div>
+    <div class="panelBody">
+      <div class="tierBoard" id="tierBoard"></div>
+      <div class="hr"></div>
+      <div class="tierFooter">
+        <div class="hint">Tip: drag a card onto another tier area to move it there.</div>
+        <button class="btn ghost" id="btnBackToReview">Back to review</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const $ = (sel) => document.querySelector(sel);
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  const TIERS = [
+    { key: 'S', color: '#ff7f7f' },
+    { key: 'A', color: '#ffbf7f' },
+    { key: 'B', color: '#ffdf7f' },
+    { key: 'C', color: '#ffff7f' },
+    { key: 'D', color: '#bfff7f' },
+    { key: 'To Sort', color: '#8792a2' }
+  ];
+
+  const state = {
+    animeTitles: [],
+    anime: [],
+    keepMap: new Map(),
+    tierMap: new Map(),
+    tierOrder: new Map(),
+    dragId: null
+  };
+
+  function toast(msg, ms=1800){
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => t.classList.remove('show'), ms);
+  }
+
+  function log(line){
+    const box = $('#logBox');
+    box.textContent += line + '\n';
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function escapeHtml(s){
+    return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function truncate(text, max){
+    const s = String(text || '').trim();
+    if(s.length <= max) return s;
+    return s.slice(0, Math.max(1, max - 1)).trimEnd() + '…';
+  }
+
+  function shortenGenre(g){
+    const map = {
+      'Slice of Life':'Slice/Life',
+      'Supernatural':'Supernat.',
+      'Psychological':'Psych.',
+      'Mahou Shoujo':'Mahou',
+      'Sci-Fi':'Sci‑Fi',
+      'Adventure':'Advent.',
+      'Comedy':'Comedy',
+      'Romance':'Romance',
+      'Mystery':'Mystery',
+      'Fantasy':'Fantasy'
+    };
+    if(map[g]) return map[g];
+    if(g.length <= 11) return g;
+    return truncate(g, 11);
+  }
+
+  function formatInfo(a){
+    const year = a.seasonYear || '—';
+    const eps = typeof a.episodes === 'number' ? `${a.episodes} eps` : 'eps ?';
+    return `${year} / ${eps}`;
+  }
+
+  function formatGenres(a){
+    const genres = Array.isArray(a.genres) ? a.genres.filter(Boolean).slice(0, 3).map(shortenGenre) : [];
+    return genres.join(' • ');
+  }
+
+  function makePlaceholderDataUrl(label){
+    const text = truncate(label || '?', 2).toUpperCase();
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800"><rect width="100%" height="100%" fill="#12161d"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui,Arial" font-size="120" fill="#f2f4f8">${text}</text></svg>`;
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
+
+  function safeImg(url, label){ return url || makePlaceholderDataUrl(label); }
+
+  function showPanel(id){
+    ['#panelInput', '#panelReview', '#panelTier'].forEach(sel => {
+      $(sel).style.display = sel === id ? '' : 'none';
+    });
+  }
+
+  const API_URL = 'https://graphql.anilist.co';
+
+  async function anilistRequest(query, variables){
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ query, variables })
+    });
+
+    if(res.status === 429){
+      const retryAfter = Number(res.headers.get('Retry-After') || '2');
+      await sleep(Math.max(1, Math.min(retryAfter, 8)) * 1000);
+      return anilistRequest(query, variables);
+    }
+
+    const json = await res.json().catch(() => ({}));
+    if(!res.ok || json.errors){
+      const msg = json.errors?.[0]?.message || ('HTTP ' + res.status);
+      throw new Error(msg);
+    }
+    return json.data;
+  }
+
+  function buildBatchMediaQuery(titles){
+    const esc = s => String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    const fields = titles.map((t, i) => `
+      a${i}: Media(search: "${esc(t)}", type: ANIME) {
+        id
+        siteUrl
+        title { userPreferred romaji english native }
+        coverImage { large }
+        seasonYear
+        episodes
+        genres
+      }
+    `).join('\n');
+    return `query { ${fields} }`;
+  }
+
+  async function fetchAnimeBatch(titles){
+    const data = await anilistRequest(buildBatchMediaQuery(titles), {});
+    return titles.map((_, i) => data[`a${i}`] || null);
+  }
+
+  async function fetchAll(){
+    const raw = $('#animeInput').value || '';
+    const titles = raw.split('\n').map(s => s.trim()).filter(Boolean);
+    state.animeTitles = titles;
+    state.anime = [];
+    state.keepMap.clear();
+    state.tierMap.clear();
+    state.tierOrder.clear();
+    $('#logBox').textContent = '';
+    $('#progBar').style.width = '0%';
+    $('#progText').textContent = 'Starting…';
+
+    if(!titles.length){
+      toast('Paste at least one anime title.');
+      return;
+    }
+
+    log(`Using AniList GraphQL at ${API_URL}`);
+    log(`Fetching: ${titles.length} title(s)`);
+    log('');
+
+    const byId = new Map();
+    let done = 0;
+    const CHUNK = 8;
+
+    for(let start = 0; start < titles.length; start += CHUNK){
+      const chunk = titles.slice(start, start + CHUNK);
+      try{
+        $('#progText').textContent = `Searching: ${done + 1}-${Math.min(done + chunk.length, titles.length)} / ${titles.length}`;
+        log(`Batch: ${chunk.join(' | ')}`);
+        const results = await fetchAnimeBatch(chunk);
+        results.forEach((m, idx) => {
+          const inputTitle = chunk[idx];
+          if(!m){
+            log(`  ! No match found for: ${inputTitle}`);
+            return;
+          }
+          const animeTitle = m.title?.english || m.title?.userPreferred || m.title?.romaji || m.title?.native || inputTitle;
+          const item = {
+            id: m.id,
+            title: animeTitle,
+            siteUrl: m.siteUrl || null,
+            coverImage: m.coverImage?.large || null,
+            seasonYear: m.seasonYear || null,
+            episodes: typeof m.episodes === 'number' ? m.episodes : null,
+            genres: Array.isArray(m.genres) ? m.genres : []
+          };
+          if(!byId.has(item.id)){
+            byId.set(item.id, item);
+            log(`  Matched: ${animeTitle}`);
+          } else {
+            log(`  Matched (duplicate): ${animeTitle} (skipped)`);
+          }
+        });
+      }catch(err){
+        log(`  ✗ Batch error: ${err.message}`);
+      }
+
+      done += chunk.length;
+      const pct = Math.round((done / titles.length) * 100);
+      $('#progBar').style.width = pct + '%';
+      $('#progText').textContent = `Progress: ${done}/${titles.length}`;
+      await sleep(250);
+    }
+
+    state.anime = Array.from(byId.values());
+    state.anime.forEach(a => state.keepMap.set(a.id, true));
+
+    log('');
+    log(`Done. Total unique anime loaded: ${state.anime.length}`);
+
+    if(!state.anime.length){
+      toast('No anime loaded. Try different titles.');
+      return;
+    }
+
+    buildReviewUI();
+    showPanel('#panelReview');
+  }
+
+  function buildReviewUI(){
+    $('#filterInput').value = '';
+    $('#reviewHint').textContent = `Loaded ${state.anime.length} anime. Uncheck any you don't want to include.`;
+    renderReviewGrid();
+  }
+
+  function renderReviewGrid(){
+    const q = $('#filterInput').value.trim().toLowerCase();
+    const grid = $('#reviewGrid');
+    grid.innerHTML = '';
+
+    const visible = state.anime.filter(a => {
+      if(!q) return true;
+      return [a.title, String(a.seasonYear || ''), String(a.episodes || ''), ...(a.genres || [])]
+        .join(' ')
+        .toLowerCase()
+        .includes(q);
+    });
+
+    for(const a of visible){
+      const keep = state.keepMap.get(a.id) !== false;
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img class="thumb" src="${safeImg(a.coverImage, a.title)}" alt="${escapeHtml(a.title)}" loading="lazy" referrerpolicy="no-referrer">
+        <div class="cardBody">
+          <div class="name">${escapeHtml(a.title)}</div>
+          <div class="meta">${escapeHtml(formatInfo(a))}</div>
+          <div class="genres">${escapeHtml(formatGenres(a))}</div>
+          <div class="cardControls">
+            <label class="chk">
+              <input type="checkbox" data-id="${a.id}" ${keep ? 'checked' : ''}>
+              keep
+            </label>
+            <button class="btn ghost" data-open="${a.siteUrl || ''}" ${a.siteUrl ? '' : 'disabled'}>Open</button>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    }
+  }
+
+  function buildTierState(){
+    const kept = state.anime.filter(a => state.keepMap.get(a.id) !== false);
+    if(kept.length < 1){
+      toast('Keep at least 1 anime.');
+      return false;
+    }
+    state.tierMap.clear();
+    state.tierOrder.clear();
+    TIERS.forEach(t => state.tierOrder.set(t.key, []));
+    kept.forEach(a => {
+      state.tierMap.set(a.id, 'To Sort');
+      state.tierOrder.get('To Sort').push(a.id);
+    });
+    return true;
+  }
+
+  function tierItems(tierKey){
+    const ids = state.tierOrder.get(tierKey) || [];
+    const animeById = new Map(state.anime.map(a => [a.id, a]));
+    return ids
+      .map(id => animeById.get(id))
+      .filter(a => a && state.keepMap.get(a.id) !== false && state.tierMap.get(a.id) === tierKey);
+  }
+
+  function moveAnime(id, nextTier, insertIndex){
+    const prevTier = state.tierMap.get(id);
+    if(!prevTier) return;
+
+    const prevList = state.tierOrder.get(prevTier) || [];
+    const prevIndex = prevList.indexOf(id);
+    if(prevIndex !== -1) prevList.splice(prevIndex, 1);
+
+    const nextList = state.tierOrder.get(nextTier) || [];
+    let targetIndex = Number.isFinite(insertIndex) ? insertIndex : nextList.length;
+    targetIndex = Math.max(0, Math.min(targetIndex, nextList.length));
+    nextList.splice(targetIndex, 0, id);
+
+    state.tierMap.set(id, nextTier);
+  }
+
+  function getInsertIndex(zone, clientX){
+    const cards = [...zone.querySelectorAll('.tierCard:not(.dragging)')];
+    for(let i = 0; i < cards.length; i += 1){
+      const rect = cards[i].getBoundingClientRect();
+      if(clientX < rect.left + rect.width / 2) return i;
+    }
+    return cards.length;
+  }
+
+  function renderTierBoard(){
+    const board = $('#tierBoard');
+    board.innerHTML = '';
+
+    TIERS.forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'tierRow';
+      const items = tierItems(t.key);
+      row.innerHTML = `
+        <div class="tierLabel" style="background:${t.color}">${t.key}</div>
+        <div class="tierDrop ${items.length ? '' : 'empty'}" data-tier="${t.key}" data-empty="Drop anime here"></div>
+      `;
+      board.appendChild(row);
+      const drop = row.querySelector('.tierDrop');
+      items.forEach(a => drop.appendChild(createTierCard(a)));
+      attachDropZone(drop);
+    });
+
+    const keptCount = state.anime.filter(a => state.keepMap.get(a.id) !== false).length;
+    const unsortedCount = tierItems('To Sort').length;
+    $('#tierSummary').textContent = `${keptCount} anime • ${unsortedCount} left to sort`;
+  }
+
+  function createTierCard(a){
+    const card = document.createElement('div');
+    card.className = 'tierCard';
+    card.draggable = true;
+    card.dataset.id = a.id;
+    card.innerHTML = `
+      <img src="${safeImg(a.coverImage, a.title)}" alt="${escapeHtml(a.title)}" loading="lazy" referrerpolicy="no-referrer">
+      <div class="tierInfo">
+        <div class="name">${escapeHtml(truncate(a.title, 28))}</div>
+        <div class="meta">${escapeHtml(formatInfo(a))}</div>
+        <div class="genres">${escapeHtml(truncate(formatGenres(a), 30))}</div>
+      </div>
+    `;
+
+    card.addEventListener('dragstart', (e) => {
+      state.dragId = Number(card.dataset.id);
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', card.dataset.id);
+    });
+
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      document.querySelectorAll('.tierDrop').forEach(el => el.classList.remove('over'));
+    });
+
+    return card;
+  }
+
+  function attachDropZone(zone){
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      zone.classList.add('over');
+    });
+    zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      zone.classList.remove('over');
+      const id = Number(e.dataTransfer.getData('text/plain') || state.dragId);
+      const tier = zone.dataset.tier;
+      if(!id || !tier) return;
+      const insertIndex = getInsertIndex(zone, e.clientX);
+      moveAnime(id, tier, insertIndex);
+      renderTierBoard();
+    });
+  }
+
+  function exportTierJSON(){
+    return TIERS.map(t => ({
+      tier: t.key,
+      anime: tierItems(t.key).map(a => ({
+        id: a.id,
+        title: a.title,
+        year: a.seasonYear,
+        episodes: a.episodes,
+        genres: a.genres,
+        image: a.coverImage,
+        url: a.siteUrl
+      }))
+    }));
+  }
+
+  function downloadJSON(){
+    const blob = new Blob([JSON.stringify(exportTierJSON(), null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'anime-tier-list.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  }
+
+  $('#btnFetch').addEventListener('click', () => {
+    showPanel('#panelInput');
+    fetchAll().catch(err => {
+      log('Fatal error: ' + err.message);
+      toast('Error fetching. Check the log.');
+    });
+  });
+
+  $('#btnClear').addEventListener('click', () => {
+    state.animeTitles = [];
+    state.anime = [];
+    state.keepMap.clear();
+    state.tierMap.clear();
+    state.tierOrder.clear();
+    $('#animeInput').value = '';
+    $('#logBox').textContent = '';
+    $('#progBar').style.width = '0%';
+    $('#progText').textContent = 'Ready.';
+    showPanel('#panelInput');
+    toast('Cleared.');
+  });
+
+  $('#filterInput').addEventListener('input', renderReviewGrid);
+
+  $('#btnAll').addEventListener('click', () => {
+    state.anime.forEach(a => state.keepMap.set(a.id, true));
+    renderReviewGrid();
+    $('#reviewHint').textContent = `Keeping ${state.anime.length} anime out of ${state.anime.length}.`;
+  });
+
+  $('#btnNone').addEventListener('click', () => {
+    state.anime.forEach(a => state.keepMap.set(a.id, false));
+    renderReviewGrid();
+    $('#reviewHint').textContent = `Keeping 0 anime out of ${state.anime.length}.`;
+  });
+
+  $('#reviewGrid').addEventListener('change', (e) => {
+    const cb = e.target;
+    if(cb && cb.matches('input[type="checkbox"][data-id]')){
+      const id = Number(cb.dataset.id);
+      state.keepMap.set(id, cb.checked);
+      const kept = state.anime.filter(a => state.keepMap.get(a.id) !== false).length;
+      $('#reviewHint').textContent = `Keeping ${kept} anime out of ${state.anime.length}.`;
+    }
+  });
+
+  document.body.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-open]');
+    if(btn){
+      const url = btn.getAttribute('data-open');
+      if(url) window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  });
+
+  $('#btnStartTier').addEventListener('click', () => {
+    if(!buildTierState()) return;
+    renderTierBoard();
+    showPanel('#panelTier');
+  });
+
+  $('#btnBackToReview').addEventListener('click', () => showPanel('#panelReview'));
+
+  $('#btnResetTiers').addEventListener('click', () => {
+    if(!buildTierState()) return;
+    renderTierBoard();
+    toast('Tiers reset.');
+  });
+
+  $('#btnCopyJSON').addEventListener('click', async () => {
+    const json = JSON.stringify(exportTierJSON(), null, 2);
+    try {
+      await navigator.clipboard.writeText(json);
+      toast('Copied JSON to clipboard.');
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = json;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      toast('Copied JSON.');
+    }
+  });
+
+  $('#btnDownloadJSON').addEventListener('click', () => {
+    downloadJSON();
+    toast('JSON download started.');
+  });
+
+  $('#logBox').textContent = '\n';
+})();
+</script>
+</body>
+</html>
