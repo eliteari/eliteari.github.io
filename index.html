@@ -88,16 +88,21 @@
       <button class="tabBtn" id="tab-anime" role="tab" aria-selected="false" aria-controls="frame-anime">
         Anime sorter
       </button>
+      <button class="tabBtn" id="tab-anime-tierlist" role="tab" aria-selected="false" aria-controls="frame-anime-tierlist">
+        Anime Tier List
+      </button>
     </div>
 
     <div class="panel">
       <!-- Keep these files in the same folder when you deploy:
            - character_sorter.html (original character sorter)
            - anime_sorter.html (anime sorter)
+           - anime_tier_list.html (anime tier list)
            - sorter_hub.html (this file)
       -->
       <iframe class="frame active" id="frame-characters" title="Anime Character Sorter" src="character_sorter.html"></iframe>
       <iframe class="frame" id="frame-anime" title="Anime Sorter" src="anime_sorter.html"></iframe>
+      <iframe class="frame" id="frame-anime-tierlist" title="Anime Tier List" src="anime_tier_list.html"></iframe>
     </div>
 
     <div class="note">
@@ -110,7 +115,8 @@
 (() => {
   const tabs = [
     { btn: document.getElementById("tab-characters"), frame: document.getElementById("frame-characters") },
-    { btn: document.getElementById("tab-anime"), frame: document.getElementById("frame-anime") }
+    { btn: document.getElementById("tab-anime"), frame: document.getElementById("frame-anime") },
+    { btn: document.getElementById("tab-anime-tierlist"), frame: document.getElementById("frame-anime-tierlist") }
   ];
 
   function activate(idx){
@@ -124,14 +130,8 @@
 
   tabs[0].btn.addEventListener("click", () => activate(0));
   tabs[1].btn.addEventListener("click", () => activate(1));
+  tabs[2].btn.addEventListener("click", () => activate(2));
 
-  // Keyboard: Left/Right to switch tabs when focused on a tab
-  document.addEventListener("keydown", (e) => {
-    const isOnTab = tabs.some(t => t.btn === document.activeElement);
-    if(!isOnTab) return;
-    if(e.key === "ArrowLeft"){ e.preventDefault(); activate(0); }
-    if(e.key === "ArrowRight"){ e.preventDefault(); activate(1); }
-  });
 })();
 </script>
 </body>
