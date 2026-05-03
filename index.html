@@ -91,6 +91,9 @@
       <button class="tabBtn" id="tab-anime-tierlist" role="tab" aria-selected="false" aria-controls="frame-anime-tierlist">
         Anime Tier List
       </button>
+      <button class="tabBtn" id="tab-character-tierlist" role="tab" aria-selected="false" aria-controls="frame-character-tierlist">
+        Character Tier List
+      </button>
     </div>
 
     <div class="panel">
@@ -103,6 +106,7 @@
       <iframe class="frame active" id="frame-characters" title="Anime Character Sorter" src="character_sorter.html"></iframe>
       <iframe class="frame" id="frame-anime" title="Anime Sorter" src="anime_sorter.html"></iframe>
       <iframe class="frame" id="frame-anime-tierlist" title="Anime Tier List" src="anime_tier_list.html"></iframe>
+      <iframe class="frame" id="frame-character-tierlist" title="Character Tier List" src="character_tier_list.html"></iframe>
     </div>
 
     <div class="note">
@@ -116,7 +120,8 @@
   const tabs = [
     { btn: document.getElementById("tab-characters"), frame: document.getElementById("frame-characters") },
     { btn: document.getElementById("tab-anime"), frame: document.getElementById("frame-anime") },
-    { btn: document.getElementById("tab-anime-tierlist"), frame: document.getElementById("frame-anime-tierlist") }
+    { btn: document.getElementById("tab-anime-tierlist"), frame: document.getElementById("frame-anime-tierlist") },
+    { btn: document.getElementById("tab-character-tierlist"), frame: document.getElementById("frame-character-tierlist") }
   ];
 
   function activate(idx){
@@ -131,6 +136,7 @@
   tabs[0].btn.addEventListener("click", () => activate(0));
   tabs[1].btn.addEventListener("click", () => activate(1));
   tabs[2].btn.addEventListener("click", () => activate(2));
+  tabs[3].btn.addEventListener("click", () => activate(3));
 
 })();
 </script>
