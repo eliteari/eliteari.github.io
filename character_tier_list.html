@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Anime Character Tier List</title>
+  <style>
+    :root{
+      --bg:#0f1115;
+      --panel:#171a21;
+      --panel-2:#1d212a;
+      --text:#f2f4f8;
+      --muted:#a8b0bf;
+      --border:rgba(255,255,255,.10);
+      --border-strong:rgba(255,255,255,.18);
+      --shadow:0 14px 30px rgba(0,0,0,.28);
+      --radius:18px;
+      --s:#ff7f7f;
+      --a:#ffbf7f;
+      --b:#ffdf7f;
+      --c:#ffff7f;
+      --d:#bfff7f;
+      --unsorted:#8792a2;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+    header,main{max-width:1260px;margin:0 auto;padding:18px}
+    header{padding-top:24px;padding-bottom:8px}
+    h1,h2,h3,p{margin:0}
+    .sub{margin-top:6px;color:var(--muted);font-size:13px}
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .panel + .panel{margin-top:16px}
+    .panelHead{
+      padding:14px 16px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .panelBody{padding:16px}
+    .hint,.small{color:var(--muted);font-size:12px}
+    .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    textarea,input[type="text"],input[type="number"],input[type="file"]{
+      width:100%;
+      background:var(--panel-2);
+      color:var(--text);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px 13px;
+      outline:none;
+      font:inherit;
+    }
+    input[type="number"]{width:150px}
+    input[type="file"]{width:auto;max-width:100%;cursor:pointer}
+    textarea{min-height:120px;resize:vertical}
+    textarea:focus,input[type="text"]:focus,input[type="number"]:focus{border-color:var(--border-strong)}
+    .btn{
+      background:var(--panel-2);
+      color:var(--text);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      font:inherit;
+      transition:.15s ease;
+    }
+    .btn:hover{border-color:var(--border-strong);transform:translateY(-1px)}
+    .btn.primary{background:#f2f4f8;color:#11151c;border-color:transparent;font-weight:650}
+    .btn.ghost{color:var(--muted)}
+    .btn.warn{background:#3a2020;color:#ffd5d5;border-color:rgba(255,127,127,.35)}
+    .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+    .hr{height:1px;background:var(--border);margin:14px 0}
+    .progress{
+      width:280px;max-width:100%;height:10px;
+      border-radius:999px;background:var(--panel-2);border:1px solid var(--border);overflow:hidden
+    }
+    .bar{height:100%;width:0%;background:#f2f4f8}
+    .log{
+      white-space:pre-wrap;
+      font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      background:var(--panel-2);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+      min-height:130px;
+      max-height:240px;
+      overflow:auto;
+    }
+    details{
+      background:rgba(255,255,255,.025);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px;
+    }
+    summary{cursor:pointer;font-weight:700;color:var(--text)}
+    .settingsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:12px}
+    .primaryControls{align-items:flex-end}
+    .compactField{min-width:170px}
+    .compactField input[type="number"]{width:150px}
+    .fetchLogDetails .log{margin-top:12px}
+    .field label{display:block;margin-bottom:6px;color:var(--muted);font-size:12px}
+    .field input[type="number"]{width:100%}
+    .reviewToolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px}
+    .card{
+      background:var(--panel-2);
+      border:1px solid var(--border);
+      border-radius:16px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    .thumb{width:100%;aspect-ratio:1/1;object-fit:cover;background:#0a0d12}
+    .cardBody{padding:10px;display:flex;flex-direction:column;gap:6px;flex:1}
+    .name{font-weight:700;font-size:13px;line-height:1.25}
+    .meta,.genres{font-size:12px;color:var(--muted);line-height:1.25}
+    .cardControls{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto}
+    .chk{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;cursor:pointer}
+    .tierBoard{display:flex;flex-direction:column;gap:14px}
+    .tierRow{
+      display:grid;
+      grid-template-columns:92px 1fr;
+      gap:10px;
+      align-items:stretch;
+    }
+    .tierLabel{
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      font-weight:800;
+      font-size:28px;
+      color:#171a21;
+      min-height:148px;
+      border:1px solid rgba(0,0,0,.08);
+    }
+    .tierDrop{
+      background:var(--panel-2);
+      border:2px dashed var(--border);
+      border-radius:18px;
+      min-height:148px;
+      padding:10px 24px 10px 10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-content:flex-start;
+      transition:.12s ease;
+    }
+    .tierDrop.over{border-color:#fff;background:rgba(255,255,255,.045)}
+    .tierDrop.empty::after{
+      content:attr(data-empty);
+      color:var(--muted);
+      font-size:12px;
+      align-self:center;
+      margin:auto;
+    }
+    .tierCard{
+      width:112px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      border-radius:14px;
+      overflow:hidden;
+      cursor:grab;
+      user-select:none;
+      transition:transform .12s ease, opacity .12s ease, border-color .12s ease, box-shadow .12s ease;
+    }
+    .tierCard.dragging{opacity:.72;transform:scale(.96);border-color:#fff;box-shadow:0 12px 26px rgba(0,0,0,.35);cursor:grabbing}
+    .tierCard img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#0a0d12;display:block;pointer-events:none}
+    .tierInfo{padding:8px}
+    .tierInfo .name{
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .tierInfo .meta{font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .tierFooter{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+    .countPill{padding:6px 10px;border-radius:999px;background:var(--panel-2);border:1px solid var(--border);font-size:12px;color:var(--muted)}
+    .toast{
+      position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+      background:rgba(11,13,17,.96);border:1px solid var(--border);
+      border-radius:999px;padding:10px 14px;display:none;box-shadow:var(--shadow);font-size:13px
+    }
+    .toast.show{display:block}
+    a{color:inherit}
+    @media (max-width: 760px){
+      .tierRow{grid-template-columns:1fr}
+      .tierLabel{min-height:54px;font-size:24px}
+      .tierDrop{min-height:140px}
+      .tierCard{width:100px}
+      input[type="number"]{width:100%}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Anime Character Tier List</h1>
+  <div class="sub">Paste anime titles, fetch popular characters from AniList, then rank them with live drag-and-drop tiers.</div>
+</header>
+
+<main>
+  <section class="panel" id="panelInput">
+    <div class="panelHead">
+      <div>
+        <h2>Build your character pool</h2>
+        <div class="hint" style="margin-top:6px">One title per line. You can review and remove characters before ranking.</div>
+      </div>
+    </div>
+    <div class="panelBody">
+      <div style="margin-bottom:12px">
+        <textarea id="animeInput" placeholder="One per line...
+Fullmetal Alchemist: Brotherhood
+Attack on Titan
+Hunter x Hunter
+Haikyuu!!"></textarea>
+      </div>
+      <div class="row primaryControls">
+        <div class="field compactField">
+          <label for="characterLimit">Top characters per anime</label>
+          <input type="number" id="characterLimit" min="1" max="500" step="1" value="5" />
+        </div>
+        <button class="btn primary" id="btnFetch">Fetch popular characters</button>
+        <button class="btn warn" id="btnStop" disabled>Stop</button>
+        <button class="btn ghost" id="btnClear">Clear data</button>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:14px">
+        <div class="row">
+          <div class="progress"><div class="bar" id="progBar"></div></div>
+          <div class="hint" id="progText">Ready.</div>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <details>
+          <summary>Import saved JSON</summary>
+          <div class="row" style="margin-top:12px">
+            <label class="hint" for="jsonFileInput">Upload a saved tier-list JSON</label>
+            <input type="file" id="jsonFileInput" accept="application/json,.json" />
+          </div>
+        </details>
+      </div>
+      <div style="margin-top:12px">
+        <details>
+          <summary>Advanced fetch options</summary>
+          <div class="settingsGrid">
+            <div class="field">
+              <label for="animeBatchSize">Anime title matches per request</label>
+              <input type="number" id="animeBatchSize" min="1" max="15" step="1" value="8" />
+            </div>
+            <div class="field">
+              <label for="characterBatchSize">Anime character lists per request</label>
+              <input type="number" id="characterBatchSize" min="1" max="10" step="1" value="5" />
+            </div>
+            <div class="field">
+              <label for="characterCandidatePoolSize">Candidate characters checked per anime</label>
+              <input type="number" id="characterCandidatePoolSize" min="25" max="500" step="25" value="100" />
+            </div>
+            <div class="field">
+              <label for="requestDelayMs">Delay between requests, ms</label>
+              <input type="number" id="requestDelayMs" min="0" max="5000" step="50" value="800" />
+            </div>
+            <div class="field">
+              <label for="errorCooldownSec">Fallback wait after issue, seconds</label>
+              <input type="number" id="errorCooldownSec" min="3" max="120" step="1" value="20" />
+            </div>
+          </div>
+          <div class="hint" style="margin-top:10px">AniList returns character data in pages of 25. This app now fetches as many pages as needed, up to the limits above. Increase delays if AniList rate-limits a large list.</div>
+        </details>
+      </div>
+      <div style="margin-top:12px">
+        <details class="fetchLogDetails" id="fetchLogDetails">
+          <summary>Fetch log</summary>
+          <div class="log" id="logBox"></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panelReview" style="display:none">
+    <div class="panelHead">
+      <div>
+        <h2>2) Remove characters you don't want to include</h2>
+        <div class="hint" id="reviewHint" style="margin-top:6px"></div>
+      </div>
+      <div class="reviewToolbar">
+        <input type="text" id="filterInput" placeholder="Filter characters..." style="width:220px" />
+        <button class="btn ghost" id="btnAll">Select all</button>
+        <button class="btn ghost" id="btnNone">Select none</button>
+        <button class="btn primary" id="btnStartTier">Build tier list</button>
+      </div>
+    </div>
+    <div class="panelBody">
+      <div class="grid" id="reviewGrid"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panelTier" style="display:none">
+    <div class="panelHead">
+      <div>
+        <h2>3) Drag characters into tiers</h2>
+        <div class="hint" style="margin-top:6px">Drag cards between tiers. Existing cards move live while you drag, so release when the preview position looks right.</div>
+      </div>
+      <div class="row">
+        <div class="countPill" id="tierSummary">0 characters</div>
+        <button class="btn ghost" id="btnRandomise">Randomise</button>
+        <button class="btn ghost" id="btnResetTiers">Reset tiers</button>
+        <button class="btn ghost" id="btnCopyJSON">Copy JSON</button>
+        <button class="btn ghost" id="btnDownloadJSON">Download JSON</button>
+      </div>
+    </div>
+    <div class="panelBody">
+      <div class="tierBoard" id="tierBoard"></div>
+      <div class="hr"></div>
+      <div class="tierFooter">
+        <div class="hint">Tip: Randomise only shuffles characters still in To Sort. Characters already placed in S/A/B/C/D stay where they are.</div>
+        <button class="btn ghost" id="btnBackToReview">Back to review</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const $ = (sel) => document.querySelector(sel);
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  const TIERS = [
+    { key: 'S', color: '#ff7f7f' },
+    { key: 'A', color: '#ffbf7f' },
+    { key: 'B', color: '#ffdf7f' },
+    { key: 'C', color: '#ffff7f' },
+    { key: 'D', color: '#bfff7f' },
+    { key: 'To Sort', color: '#8792a2' }
+  ];
+
+  const API_URL = 'https://graphql.anilist.co';
+  const REQUEST_TIMEOUT_MS = 22000;
+  const MAX_CHARACTERS_PER_ANIME = 500;
+  const MAX_CANDIDATE_POOL_SIZE = 500;
+  const MAX_RETRIES = 5;
+  const MAX_RETRY_WAIT_MS = 45000;
+  const DEFAULT_SETTINGS = {
+    animeBatchSize: 8,
+    characterBatchSize: 5,
+    characterCandidatePoolSize: 100,
+    requestDelayMs: 800,
+    errorCooldownMs: 20000
+  };
+
+  const state = {
+    animeTitles: [],
+    anime: [],
+    characters: [],
+    characterLimit: 5,
+    settings: { ...DEFAULT_SETTINGS },
+    keepMap: new Map(),
+    tierMap: new Map(),
+    tierOrder: new Map(),
+    dragId: null,
+    dragCommitted: false,
+    dragHadPreview: false,
+    isFetching: false,
+    activeRunId: 0,
+    stopRequested: false
+  };
+
+  function toast(msg, ms=1800){
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => t.classList.remove('show'), ms);
+  }
+  function log(line){
+    const box = $('#logBox');
+    box.textContent += line + '\n';
+    box.scrollTop = box.scrollHeight;
+  }
+  function escapeHtml(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function truncate(text, max){ const s = String(text || '').trim(); return s.length <= max ? s : s.slice(0, Math.max(1, max - 1)).trimEnd() + '…'; }
+  function compactAnimeTitle(title, maxLettersPerWord=4){
+    return String(title || '').trim().split(/\s+/).filter(Boolean).map(word => {
+      const leading = (word.match(/^[^\p{L}\p{N}]*/u) || [''])[0];
+      const trailing = (word.match(/[^\p{L}\p{N}]*$/u) || [''])[0];
+      const core = word.slice(leading.length, word.length - trailing.length);
+      if(core.length <= maxLettersPerWord) return word;
+      return leading + core.slice(0, maxLettersPerWord) + '.' + trailing;
+    }).join(' ');
+  }
+  function formatNumber(n){ const x = Number(n); return Number.isFinite(x) ? new Intl.NumberFormat().format(x) : '0'; }
+  function normalizeTitleForMatch(value){
+    return String(value || '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[×✕✖]/g, 'x')
+      .replace(/&/g, ' and ')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim()
+      .replace(/\s+/g, ' ');
+  }
+  function stripYearFromTitle(value){
+    return normalizeTitleForMatch(value).replace(/\b(?:19|20)\d{2}\b/g, '').replace(/\s+/g, ' ').trim();
+  }
+  function extractYear(value){
+    const match = String(value || '').match(/\b(19\d{2}|20\d{2})\b/);
+    return match ? Number(match[1]) : null;
+  }
+  function mediaTitle(media, fallback='Untitled anime'){
+    return media?.title?.english || media?.title?.userPreferred || media?.title?.romaji || media?.title?.native || fallback;
+  }
+  function mediaTitleOptions(media){
+    return [media?.title?.userPreferred, media?.title?.english, media?.title?.romaji, media?.title?.native].filter(Boolean);
+  }
+  function chooseBestMediaMatch(inputTitle, candidates){
+    const valid = (candidates || []).filter(Boolean);
+    if(!valid.length) return null;
+
+    const wantedYear = extractYear(inputTitle);
+    const inputFull = normalizeTitleForMatch(inputTitle);
+    const inputBase = stripYearFromTitle(inputTitle);
+    const inputTokens = inputBase.split(' ').filter(t => t.length > 1);
+
+    let best = null;
+    let bestScore = -Infinity;
+    valid.forEach((media, index) => {
+      const options = mediaTitleOptions(media);
+      const normalOptions = options.map(normalizeTitleForMatch);
+      const baseOptions = options.map(stripYearFromTitle);
+      const year = Number(media?.startDate?.year || 0) || extractYear(options.join(' '));
+      const exactBase = inputBase && baseOptions.some(t => t === inputBase);
+      const exactFull = inputFull && normalOptions.some(t => t === inputFull);
+      const tokenCoverage = inputTokens.length ? Math.max(...baseOptions.map(title => inputTokens.filter(token => title.includes(token)).length)) / inputTokens.length : 0;
+      const popularity = Number(media?.popularity || 0);
+
+      let score = 0;
+      if(wantedYear !== null) score += year === wantedYear ? 250000 : -250000;
+      if(exactBase) score += 100000;
+      if(exactFull) score += 10000;
+      score += tokenCoverage * 25000;
+      score += Math.min(popularity, 5000000) / 50;
+      score -= index * 25;
+
+      if(score > bestScore){ best = media; bestScore = score; }
+    });
+    return best;
+  }
+  function makePlaceholderDataUrl(label){
+    const text = truncate(label || '?', 2).toUpperCase();
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><rect width="100%" height="100%" fill="#12161d"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui,Arial" font-size="110" fill="#f2f4f8">' + escapeHtml(text) + '</text></svg>';
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
+  function safeImg(url, label){ return url || makePlaceholderDataUrl(label); }
+  function showPanel(id){ ['#panelInput', '#panelReview', '#panelTier'].forEach(sel => { $(sel).style.display = sel === id ? '' : 'none'; }); }
+  function clampInt(value, min, max, fallback){
+    const n = Math.floor(Number(value));
+    if(!Number.isFinite(n)) return fallback;
+    return Math.max(min, Math.min(max, n));
+  }
+  function getCharacterLimit(){
+    const limit = clampInt($('#characterLimit').value, 1, MAX_CHARACTERS_PER_ANIME, 5);
+    $('#characterLimit').value = String(limit);
+    return limit;
+  }
+  function getSettings(){
+    const settings = {
+      animeBatchSize: clampInt($('#animeBatchSize').value, 1, 15, DEFAULT_SETTINGS.animeBatchSize),
+      characterBatchSize: clampInt($('#characterBatchSize').value, 1, 10, DEFAULT_SETTINGS.characterBatchSize),
+      characterCandidatePoolSize: clampInt($('#characterCandidatePoolSize').value, 25, MAX_CANDIDATE_POOL_SIZE, DEFAULT_SETTINGS.characterCandidatePoolSize),
+      requestDelayMs: clampInt($('#requestDelayMs').value, 0, 5000, DEFAULT_SETTINGS.requestDelayMs),
+      errorCooldownMs: clampInt($('#errorCooldownSec').value, 3, 120, DEFAULT_SETTINGS.errorCooldownMs / 1000) * 1000
+    };
+    settings.characterCandidatePoolSize = Math.max(settings.characterCandidatePoolSize, getCharacterLimit());
+    $('#animeBatchSize').value = String(settings.animeBatchSize);
+    $('#characterBatchSize').value = String(settings.characterBatchSize);
+    $('#characterCandidatePoolSize').value = String(settings.characterCandidatePoolSize);
+    $('#requestDelayMs').value = String(settings.requestDelayMs);
+    $('#errorCooldownSec').value = String(Math.round(settings.errorCooldownMs / 1000));
+    state.settings = settings;
+    return settings;
+  }
+  function setProgress(done, total, text){
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    $('#progBar').style.width = Math.max(0, Math.min(100, pct)) + '%';
+    $('#progText').textContent = text || ('Progress: ' + done + '/' + total);
+  }
+  function setFetching(isFetching){
+    state.isFetching = isFetching;
+    $('#btnFetch').disabled = isFetching;
+    $('#btnStop').disabled = !isFetching;
+    $('#btnClear').disabled = isFetching;
+    $('#characterLimit').disabled = isFetching;
+    $('#animeBatchSize').disabled = isFetching;
+    $('#characterBatchSize').disabled = isFetching;
+    $('#characterCandidatePoolSize').disabled = isFetching;
+    $('#requestDelayMs').disabled = isFetching;
+    $('#errorCooldownSec').disabled = isFetching;
+    $('#jsonFileInput').disabled = isFetching;
+  }
+  function assertActive(runId){
+    if(state.stopRequested || runId !== state.activeRunId) throw new Error('Stopped by user.');
+  }
+  async function interruptibleSleep(ms, runId){
+    const end = Date.now() + Math.max(0, ms);
+    while(Date.now() < end){
+      assertActive(runId);
+      await sleep(Math.min(500, end - Date.now()));
+    }
+  }
+  async function waitWithCountdown(ms, reason, runId){
+    const end = Date.now() + Math.max(0, ms);
+    if(ms >= 1500) log('  ⏳ ' + reason + ' — waiting about ' + Math.ceil(ms / 1000) + 's');
+    while(Date.now() < end){
+      assertActive(runId);
+      const remaining = Math.ceil((end - Date.now()) / 1000);
+      if(ms >= 1500) $('#progText').textContent = reason + ' — resumes in ' + remaining + 's';
+      await sleep(Math.min(1000, end - Date.now()));
+    }
+  }
+  async function paceRequests(runId){
+    const wait = state.settings.requestDelayMs || 0;
+    if(wait > 0) await interruptibleSleep(wait, runId);
+  }
+
+  async function fetchWithTimeout(url, options, timeoutMs){
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try { return await fetch(url, { ...options, signal: controller.signal }); }
+    finally { clearTimeout(timer); }
+  }
+  function parseHeaderNumber(headers, name){
+    const value = headers.get(name);
+    if(value == null || value === '') return null;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+  }
+  function retryWaitMs(res, attempt){
+    const retryAfter = res ? parseHeaderNumber(res.headers, 'Retry-After') : null;
+    if(retryAfter !== null) return Math.max(1000, Math.min(MAX_RETRY_WAIT_MS, retryAfter * 1000));
+
+    const reset = res ? parseHeaderNumber(res.headers, 'X-RateLimit-Reset') : null;
+    if(reset !== null){
+      const untilReset = (reset * 1000) - Date.now() + 1000;
+      if(untilReset > 0) return Math.min(MAX_RETRY_WAIT_MS, untilReset);
+    }
+
+    if(res && res.status === 429) return Math.min(MAX_RETRY_WAIT_MS, state.settings.errorCooldownMs || DEFAULT_SETTINGS.errorCooldownMs);
+    const exponential = 1000 * Math.pow(2, Math.max(0, attempt - 1));
+    const jitter = Math.floor(Math.random() * 650);
+    return Math.min(MAX_RETRY_WAIT_MS, exponential + jitter);
+  }
+  async function maybePauseForLowLimit(res, runId){
+    const remaining = parseHeaderNumber(res.headers, 'X-RateLimit-Remaining');
+    const reset = parseHeaderNumber(res.headers, 'X-RateLimit-Reset');
+    if(remaining !== null && remaining <= 2 && reset !== null){
+      const wait = Math.max(0, Math.min(MAX_RETRY_WAIT_MS, reset * 1000 - Date.now() + 1000));
+      if(wait > 0) await waitWithCountdown(wait, 'AniList rate-limit window is nearly empty', runId);
+    }
+  }
+
+  async function anilistRequest(query, variables={}, label='request', runId=state.activeRunId, attempt=1){
+    assertActive(runId);
+    let res;
+    try{
+      res = await fetchWithTimeout(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ query, variables })
+      }, REQUEST_TIMEOUT_MS);
+    }catch(err){
+      if(attempt < MAX_RETRIES){
+        const wait = retryWaitMs(null, attempt);
+        log('  ↻ ' + label + ' timed out/network failed; retrying in ' + Math.ceil(wait/1000) + 's (' + attempt + '/' + MAX_RETRIES + ')');
+        await waitWithCountdown(wait, 'Network retry cooldown', runId);
+        return anilistRequest(query, variables, label, runId, attempt + 1);
+      }
+      throw new Error(err.name === 'AbortError' ? 'Request timed out' : err.message);
+    }
+
+    let json = {};
+    try { json = await res.json(); } catch { json = {}; }
+
+    if(res.status === 429 || res.status >= 500){
+      if(attempt < MAX_RETRIES){
+        const wait = retryWaitMs(res, attempt);
+        log('  ↻ ' + label + ' hit HTTP ' + res.status + '; retrying in ' + Math.ceil(wait/1000) + 's (' + attempt + '/' + MAX_RETRIES + ')');
+        await waitWithCountdown(wait, 'AniList retry cooldown', runId);
+        return anilistRequest(query, variables, label, runId, attempt + 1);
+      }
+    }
+
+    if(!res.ok || json.errors){
+      const message = json.errors?.map(e => e.message).filter(Boolean).join('; ') || ('HTTP ' + res.status);
+      throw new Error(message);
+    }
+
+    await maybePauseForLowLimit(res, runId);
+    return json.data;
+  }
+
+  function buildBatchMediaQuery(titles){
+    const vars = titles.map((_, i) => '$s' + i + ': String').join(', ');
+    const fields = titles.map((_, i) => `
+      a${i}: Page(page: 1, perPage: 8) {
+        media(search: $s${i}, type: ANIME, sort: [SEARCH_MATCH, POPULARITY_DESC]) {
+          id siteUrl popularity format episodes startDate { year }
+          title { userPreferred romaji english native }
+        }
+      }`).join('\n');
+    const variables = Object.fromEntries(titles.map((title, i) => ['s' + i, title]));
+    return { query: `query (${vars}) { ${fields}
+    }`, variables };
+  }
+  async function fetchAnimeBatch(titles, runId){
+    const { query, variables } = buildBatchMediaQuery(titles);
+    const data = await anilistRequest(query, variables, 'anime search batch of ' + titles.length, runId);
+    return titles.map((title, i) => {
+      const candidates = data['a' + i]?.media || [];
+      const best = chooseBestMediaMatch(title, candidates);
+      if(best) best._candidateCount = candidates.length;
+      return best;
+    });
+  }
+  async function fetchAnimeBatchWithFallback(titles, runId){
+    assertActive(runId);
+    try{
+      return await fetchAnimeBatch(titles, runId);
+    }catch(err){
+      if(titles.length > 1){
+        log('  ⚠ Anime batch of ' + titles.length + ' failed: ' + err.message);
+        log('  ↳ Waiting, then retrying it as smaller batches.');
+        await waitWithCountdown(state.settings.errorCooldownMs, 'Fallback cooldown before smaller anime batches', runId);
+        const mid = Math.ceil(titles.length / 2);
+        const left = await fetchAnimeBatchWithFallback(titles.slice(0, mid), runId);
+        await paceRequests(runId);
+        const right = await fetchAnimeBatchWithFallback(titles.slice(mid), runId);
+        return left.concat(right);
+      }
+      log('  ✗ Could not match anime "' + titles[0] + '": ' + err.message);
+      return [null];
+    }
+  }
+
+  function buildBatchCharactersPageQuery(animeList, page, perPage){
+    const varNames = ['$page: Int', '$perPage: Int'].concat(animeList.map((_, i) => '$id' + i + ': Int')).join(', ');
+    const fields = animeList.map((_, i) => `
+      a${i}: Media(id: $id${i}, type: ANIME) {
+        id siteUrl title { userPreferred romaji english native }
+        characters(sort: [FAVOURITES_DESC, ID], page: $page, perPage: $perPage) {
+          pageInfo { currentPage hasNextPage total perPage }
+          nodes { id siteUrl favourites name { full } image { large } }
+        }
+      }`).join('\n');
+    const variables = { page, perPage };
+    animeList.forEach((anime, i) => { variables['id' + i] = Number(anime.id); });
+    return { query: `query (${varNames}) { ${fields}
+    }`, variables };
+  }
+  async function fetchCharactersPageBatch(animeList, page, perPage, runId){
+    const { query, variables } = buildBatchCharactersPageQuery(animeList, page, perPage);
+    const data = await anilistRequest(query, variables, 'popular-character candidate page ' + page + ' for ' + animeList.length + ' anime', runId);
+    return animeList.map((anime, i) => {
+      const media = data['a' + i];
+      const title = mediaTitle(media, anime.title);
+      const nodes = (media?.characters?.nodes || []).filter(Boolean);
+      return {
+        anime: { ...anime, title, siteUrl: media?.siteUrl || anime.siteUrl || null },
+        nodes,
+        pageInfo: media?.characters?.pageInfo || null
+      };
+    });
+  }
+  async function fetchCharactersBatch(animeList, runId){
+    const perPage = 25;
+    const candidateLimit = Math.max(state.characterLimit, state.settings.characterCandidatePoolSize || DEFAULT_SETTINGS.characterCandidatePoolSize);
+    const maxPages = Math.max(1, Math.ceil(candidateLimit / perPage));
+    const buckets = new Map(animeList.map(anime => [anime.id, { anime, nodes: [], hasNextPage: true }]));
+    let activeAnime = animeList.slice();
+
+    for(let page = 1; page <= maxPages && activeAnime.length; page += 1){
+      assertActive(runId);
+      if(maxPages > 1) log('  Candidate page ' + page + '/' + maxPages + ' for ' + activeAnime.length + ' anime');
+      const pageResults = await fetchCharactersPageBatch(activeAnime, page, perPage, runId);
+      const nextActive = [];
+      pageResults.forEach(({ anime, nodes, pageInfo }) => {
+        const bucket = buckets.get(anime.id);
+        if(!bucket) return;
+        bucket.anime = anime;
+        bucket.nodes.push(...nodes);
+        bucket.hasNextPage = Boolean(pageInfo?.hasNextPage);
+        if(bucket.hasNextPage && bucket.nodes.length < candidateLimit) nextActive.push(anime);
+      });
+      activeAnime = nextActive;
+      if(page < maxPages && activeAnime.length) await paceRequests(runId);
+    }
+
+    return animeList.map(anime => {
+      const bucket = buckets.get(anime.id) || { anime, nodes: [] };
+      const byCharacterId = new Map();
+      bucket.nodes.forEach(node => {
+        if(node && !byCharacterId.has(node.id)) byCharacterId.set(node.id, node);
+      });
+      let nodes = Array.from(byCharacterId.values());
+      const hasFavouriteCounts = nodes.some(c => Number.isFinite(Number(c.favourites)));
+      if(hasFavouriteCounts){
+        nodes = nodes.slice().sort((a, b) => (Number(b.favourites || 0) - Number(a.favourites || 0)) || String(a.name?.full || '').localeCompare(String(b.name?.full || '')));
+      }
+      nodes = nodes.slice(0, state.characterLimit);
+      return {
+        anime: bucket.anime,
+        checkedCandidateCount: byCharacterId.size,
+        characters: nodes.map((c, index) => ({
+          id: anime.id + ':' + c.id,
+          anilistCharacterId: c.id,
+          name: c.name?.full || 'Unknown character',
+          image: c.image?.large || null,
+          siteUrl: c.siteUrl || null,
+          favourites: Number(c.favourites || 0),
+          animeId: anime.id,
+          animeTitle: bucket.anime.title,
+          animeSiteUrl: bucket.anime.siteUrl || anime.siteUrl || null,
+          popularityRankWithinAnime: index + 1,
+          checkedCandidateCount: byCharacterId.size
+        }))
+      };
+    });
+  }
+  async function fetchCharactersBatchWithFallback(animeList, runId){
+    assertActive(runId);
+    try{
+      return await fetchCharactersBatch(animeList, runId);
+    }catch(err){
+      if(animeList.length > 1){
+        log('  ⚠ Character batch of ' + animeList.length + ' failed: ' + err.message);
+        log('  ↳ Waiting, then retrying it as smaller batches.');
+        await waitWithCountdown(state.settings.errorCooldownMs, 'Fallback cooldown before smaller character batches', runId);
+        const mid = Math.ceil(animeList.length / 2);
+        const left = await fetchCharactersBatchWithFallback(animeList.slice(0, mid), runId);
+        await paceRequests(runId);
+        const right = await fetchCharactersBatchWithFallback(animeList.slice(mid), runId);
+        return left.concat(right);
+      }
+      const anime = animeList[0];
+      log('  ✗ Could not fetch characters for "' + (anime?.title || anime?.id || 'unknown') + '": ' + err.message);
+      return [];
+    }
+  }
+
+  function chunksOf(items, size){
+    const out = [];
+    for(let start = 0; start < items.length; start += size) out.push(items.slice(start, start + size));
+    return out;
+  }
+
+  async function fetchAll(){
+    const runId = Date.now();
+    state.activeRunId = runId;
+    state.stopRequested = false;
+    setFetching(true);
+    try{
+      const titles = ($('#animeInput').value || '').split('\n').map(s => s.trim()).filter(Boolean);
+      state.animeTitles = titles;
+      state.anime = [];
+      state.characters = [];
+      state.keepMap.clear();
+      state.tierMap.clear();
+      state.tierOrder.clear();
+      state.characterLimit = getCharacterLimit();
+      const settings = getSettings();
+      $('#logBox').textContent = '';
+      const fetchLogDetails = $('#fetchLogDetails');
+      if(fetchLogDetails) fetchLogDetails.open = true;
+      setProgress(0, 1, 'Starting…');
+      showPanel('#panelInput');
+
+      if(!titles.length){ toast('Paste at least one anime title.'); setProgress(0, 1, 'Ready.'); return; }
+
+      log('Using AniList GraphQL at ' + API_URL);
+      log('Anime titles: ' + titles.length);
+      log('Top characters per anime: ' + state.characterLimit + ' (locally sorted by AniList favourites)');
+      log('Candidate characters checked per anime: up to ' + settings.characterCandidatePoolSize);
+      log('Anime title batch size: ' + settings.animeBatchSize + '; character batch size: ' + settings.characterBatchSize);
+      log('Delay between requests: ' + settings.requestDelayMs + 'ms; fallback wait: ' + Math.round(settings.errorCooldownMs / 1000) + 's');
+      log('');
+
+      const byId = new Map();
+      const animeChunks = chunksOf(titles, settings.animeBatchSize);
+      for(let chunkIndex = 0; chunkIndex < animeChunks.length; chunkIndex += 1){
+        assertActive(runId);
+        const chunk = animeChunks[chunkIndex];
+        const chunkNo = chunkIndex + 1;
+        setProgress(chunkIndex, animeChunks.length, 'Matching anime batch ' + chunkNo + '/' + animeChunks.length);
+        log('Anime batch ' + chunkNo + '/' + animeChunks.length + ': ' + chunk.join(' | '));
+        const results = await fetchAnimeBatchWithFallback(chunk, runId);
+        results.forEach((m, idx) => {
+          const inputTitle = chunk[idx];
+          if(!m){ log('  ! No match found for: ' + inputTitle); return; }
+          const animeTitle = mediaTitle(m, inputTitle);
+          const item = { id: m.id, title: animeTitle, siteUrl: m.siteUrl || null, inputTitle, startYear: m.startDate?.year || null, popularity: Number(m.popularity || 0) };
+          const yearText = item.startYear ? ' (' + item.startYear + ')' : '';
+          const popularityText = item.popularity ? ' • popularity ' + formatNumber(item.popularity) : '';
+          if(!byId.has(item.id)){
+            byId.set(item.id, item);
+            log('  Matched: ' + animeTitle + yearText + popularityText);
+          } else {
+            log('  Matched duplicate: ' + animeTitle + yearText + ' (skipped)');
+          }
+        });
+        setProgress(chunkNo, animeChunks.length, 'Matched anime batch ' + chunkNo + '/' + animeChunks.length);
+        await paceRequests(runId);
+      }
+
+      state.anime = Array.from(byId.values());
+      log('');
+      log('Unique anime matched: ' + state.anime.length);
+      if(!state.anime.length){ toast('No anime loaded. Try different titles.'); setProgress(0, 1, 'No anime loaded.'); return; }
+
+      await fetchCharactersForMatchedAnime(runId);
+    }catch(err){
+      if(String(err.message || '').includes('Stopped by user')){
+        log('');
+        log('Stopped by user. Partial results were not opened in review.');
+        setProgress(0, 1, 'Stopped.');
+        toast('Stopped.');
+      }else{
+        log('Fatal error: ' + err.message);
+        setProgress(0, 1, 'Error. Check the log.');
+        toast('Error fetching. Check the log.');
+      }
+    }finally{
+      setFetching(false);
+    }
+  }
+
+  async function fetchCharactersForMatchedAnime(runId){
+    state.characters = [];
+    state.keepMap.clear();
+    state.tierMap.clear();
+    state.tierOrder.clear();
+
+    const chunks = chunksOf(state.anime, state.settings.characterBatchSize);
+    const seen = new Set();
+    let processedAnime = 0;
+    log('');
+    log('Fetching top-' + state.characterLimit + ' popular characters in ' + chunks.length + ' batch(es), checking up to ' + state.settings.characterCandidatePoolSize + ' candidates per anime…');
+
+    for(let i = 0; i < chunks.length; i += 1){
+      assertActive(runId);
+      const chunk = chunks[i];
+      setProgress(processedAnime, state.anime.length, 'Fetching character batch ' + (i + 1) + '/' + chunks.length);
+      log('Character batch ' + (i + 1) + '/' + chunks.length + ': ' + chunk.map(a => a.title).join(' | '));
+      const results = await fetchCharactersBatchWithFallback(chunk, runId);
+      const returnedAnimeIds = new Set(results.map(r => r.anime?.id));
+      results.forEach(({ anime, characters, checkedCandidateCount }) => {
+        let added = 0;
+        characters.forEach(character => {
+          if(seen.has(character.id)) return;
+          seen.add(character.id);
+          state.characters.push(character);
+          state.keepMap.set(character.id, true);
+          added += 1;
+        });
+        log('  ' + anime.title + ': ' + added + ' popular character(s)' + (checkedCandidateCount ? ' from ' + checkedCandidateCount + ' checked' : ''));
+      });
+      chunk.forEach(anime => {
+        if(!returnedAnimeIds.has(anime.id)) log('  ' + anime.title + ': 0 character(s) loaded');
+      });
+      processedAnime += chunk.length;
+      setProgress(processedAnime, state.anime.length, 'Fetched characters for ' + processedAnime + '/' + state.anime.length + ' anime');
+      await paceRequests(runId);
+    }
+
+    $('#progText').textContent = 'Loaded ' + state.characters.length + ' character(s).';
+    log('');
+    log('Done. Total characters loaded: ' + state.characters.length);
+    if(!state.characters.length){ toast('No characters loaded. Try a smaller list or different titles.'); return; }
+    buildReviewUI();
+    showPanel('#panelReview');
+  }
+
+  function buildReviewUI(){
+    $('#filterInput').value = '';
+    const animeCount = new Set(state.characters.map(c => c.animeId)).size;
+    $('#reviewHint').textContent = 'Loaded ' + state.characters.length + ' popular character(s) from ' + animeCount + " anime. Characters were selected after checking a wider candidate pool, then sorting locally by AniList favourites. Uncheck any characters you don't want to include.";
+    renderReviewGrid();
+  }
+  function renderReviewGrid(){
+    const q = $('#filterInput').value.trim().toLowerCase();
+    const grid = $('#reviewGrid');
+    grid.innerHTML = '';
+    const visible = state.characters.filter(c => !q || [c.name, c.animeTitle, String(c.popularityRankWithinAnime || ''), String(c.favourites || '')].join(' ').toLowerCase().includes(q));
+    for(const c of visible){
+      const keep = state.keepMap.get(c.id) !== false;
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.title = c.name + ' — ' + c.animeTitle;
+      card.innerHTML = '<img class="thumb" src="' + safeImg(c.image, c.name) + '" alt="' + escapeHtml(c.name) + '" loading="lazy" referrerpolicy="no-referrer">' +
+        '<div class="cardBody"><div class="name" title="' + escapeHtml(c.name) + '">' + escapeHtml(c.name) + '</div>' +
+        '<div class="meta" title="' + escapeHtml(c.animeTitle) + '">' + escapeHtml(compactAnimeTitle(c.animeTitle)) + '</div>' +
+        '<div class="cardControls"><label class="chk"><input type="checkbox" data-id="' + escapeHtml(c.id) + '" ' + (keep ? 'checked' : '') + '> keep</label>' +
+        '<button class="btn ghost" data-open="' + (c.siteUrl || '') + '" ' + (c.siteUrl ? '' : 'disabled') + '>Open</button></div></div>';
+      grid.appendChild(card);
+    }
+  }
+
+  function selectedCharacters(){ return state.characters.filter(c => state.keepMap.get(c.id) !== false); }
+  function buildTierState(){
+    const kept = selectedCharacters();
+    if(kept.length < 1){ toast('Keep at least 1 character.'); return false; }
+    state.tierMap.clear();
+    state.tierOrder.clear();
+    TIERS.forEach(t => state.tierOrder.set(t.key, []));
+    kept.forEach(c => { state.tierMap.set(c.id, 'To Sort'); state.tierOrder.get('To Sort').push(c.id); });
+    return true;
+  }
+  function characterItems(tierKey){
+    const ids = state.tierOrder.get(tierKey) || [];
+    const characterById = new Map(state.characters.map(c => [c.id, c]));
+    return ids.map(id => characterById.get(id)).filter(c => c && state.tierMap.get(c.id) === tierKey && state.keepMap.get(c.id) !== false);
+  }
+  function getInsertionReference(zone, clientX, clientY){
+    const cards = [...zone.querySelectorAll('.tierCard:not(.dragging)')];
+    if(!cards.length) return null;
+
+    const rows = [];
+    cards.forEach(card => {
+      const rect = card.getBoundingClientRect();
+      let row = rows.find(r => Math.abs(r.top - rect.top) < Math.max(8, rect.height * 0.22));
+      if(!row){
+        row = { top: rect.top, bottom: rect.bottom, cards: [] };
+        rows.push(row);
+      }
+      row.top = Math.min(row.top, rect.top);
+      row.bottom = Math.max(row.bottom, rect.bottom);
+      row.cards.push({ card, rect });
+    });
+
+    rows.sort((a, b) => a.top - b.top);
+    rows.forEach(row => row.cards.sort((a, b) => a.rect.left - b.rect.left));
+
+    let targetRow = rows.find(row => clientY <= row.bottom + 8);
+    if(!targetRow) targetRow = rows[rows.length - 1];
+
+    for(const item of targetRow.cards){
+      if(clientX < item.rect.left + item.rect.width / 2) return item.card;
+    }
+
+    const rowIndex = rows.indexOf(targetRow);
+    const nextRow = rows[rowIndex + 1];
+    return nextRow ? nextRow.cards[0].card : null;
+  }
+  function refreshDropEmpties(){
+    document.querySelectorAll('.tierDrop').forEach(zone => {
+      zone.classList.toggle('empty', !zone.querySelector('.tierCard'));
+    });
+  }
+  function previewDragPosition(zone, clientX, clientY){
+    const dragging = document.querySelector('.tierCard.dragging');
+    if(!dragging || !zone) return;
+    const before = getInsertionReference(zone, clientX, clientY);
+    if(before) zone.insertBefore(dragging, before);
+    else zone.appendChild(dragging);
+    document.querySelectorAll('.tierDrop').forEach(el => el.classList.toggle('over', el === zone));
+    refreshDropEmpties();
+    state.dragHadPreview = true;
+  }
+  function commitTierBoardFromDOM(){
+    const seen = new Set();
+    TIERS.forEach(t => {
+      const zone = [...document.querySelectorAll('.tierDrop')].find(el => el.dataset.tier === t.key);
+      const ids = zone ? [...zone.querySelectorAll('.tierCard')].map(card => card.dataset.id).filter(Boolean) : [];
+      state.tierOrder.set(t.key, ids);
+      ids.forEach(id => {
+        state.tierMap.set(id, t.key);
+        seen.add(id);
+      });
+    });
+
+    selectedCharacters().forEach(c => {
+      if(seen.has(c.id)) return;
+      const fallbackTier = state.tierMap.get(c.id) || 'To Sort';
+      if(!state.tierOrder.has(fallbackTier)) state.tierOrder.set(fallbackTier, []);
+      state.tierOrder.get(fallbackTier).push(c.id);
+    });
+  }
+
+  function renderTierBoard(){
+    const board = $('#tierBoard');
+    board.innerHTML = '';
+    TIERS.forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'tierRow';
+      const items = characterItems(t.key);
+      const emptyText = t.key === 'To Sort' ? 'No characters left to sort' : 'Drop characters here';
+      row.innerHTML = '<div class="tierLabel" style="background:' + t.color + '">' + t.key + '</div><div class="tierDrop ' + (items.length ? '' : 'empty') + '" data-tier="' + t.key + '" data-empty="' + emptyText + '"></div>';
+      board.appendChild(row);
+      const drop = row.querySelector('.tierDrop');
+      items.forEach(c => drop.appendChild(createTierCard(c)));
+      attachDropZone(drop);
+    });
+    $('#tierSummary').textContent = selectedCharacters().length + ' characters • ' + characterItems('To Sort').length + ' left to sort';
+  }
+  function createTierCard(c){
+    const card = document.createElement('div');
+    card.className = 'tierCard';
+    card.draggable = true;
+    card.dataset.id = c.id;
+    card.title = c.name + ' — ' + c.animeTitle;
+    card.innerHTML = '<img src="' + safeImg(c.image, c.name) + '" alt="' + escapeHtml(c.name) + '" loading="lazy" referrerpolicy="no-referrer"><div class="tierInfo"><div class="name" title="' + escapeHtml(c.name) + '">' + escapeHtml(c.name) + '</div><div class="meta" title="' + escapeHtml(c.animeTitle) + '">' + escapeHtml(compactAnimeTitle(c.animeTitle)) + '</div></div>';
+    card.addEventListener('dragstart', (e) => {
+      state.dragId = card.dataset.id;
+      state.dragCommitted = false;
+      state.dragHadPreview = false;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', card.dataset.id);
+    });
+    card.addEventListener('dragend', () => {
+      const committed = state.dragCommitted;
+      card.classList.remove('dragging');
+      document.querySelectorAll('.tierDrop').forEach(el => el.classList.remove('over'));
+      if(committed) commitTierBoardFromDOM();
+      state.dragId = null;
+      state.dragCommitted = false;
+      state.dragHadPreview = false;
+      renderTierBoard();
+    });
+    return card;
+  }
+  function attachDropZone(zone){
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      if(e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+      previewDragPosition(zone, e.clientX, e.clientY);
+    });
+    zone.addEventListener('dragenter', (e) => {
+      e.preventDefault();
+      zone.classList.add('over');
+    });
+    zone.addEventListener('dragleave', (e) => {
+      if(e.relatedTarget && zone.contains(e.relatedTarget)) return;
+      zone.classList.remove('over');
+    });
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if(!state.dragId) return;
+      previewDragPosition(zone, e.clientX, e.clientY);
+      state.dragCommitted = true;
+      zone.classList.remove('over');
+    });
+  }
+  function shuffleInPlace(arr){
+    for(let i = arr.length - 1; i > 0; i -= 1){
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  function randomiseToSort(){
+    const toSort = state.tierOrder.get('To Sort') || [];
+    if(toSort.length < 2){ toast('Not enough remaining characters to randomise.'); return; }
+    shuffleInPlace(toSort);
+    renderTierBoard();
+    toast('Remaining To Sort characters randomised.');
+  }
+  function exportTierJSON(){
+    return TIERS.map(t => ({
+      tier: t.key,
+      characters: characterItems(t.key).map(c => ({
+        id: c.anilistCharacterId,
+        name: c.name,
+        animeId: c.animeId,
+        animeTitle: c.animeTitle,
+        popularityRankWithinAnime: c.popularityRankWithinAnime,
+        favourites: c.favourites,
+        checkedCandidateCount: c.checkedCandidateCount,
+        image: c.image,
+        url: c.siteUrl,
+        animeUrl: c.animeSiteUrl
+      }))
+    }));
+  }
+  function normaliseTierImportData(data){
+    if(Array.isArray(data)) return data;
+    if(Array.isArray(data?.tiers)) return data.tiers;
+    if(Array.isArray(data?.tierList)) return data.tierList;
+    throw new Error('This does not look like a tier-list JSON downloaded from this page.');
+  }
+  function makeImportedCharacterId(character, index){
+    const animePart = character.animeId ?? character.mediaId ?? character.animeTitle ?? 'anime';
+    const characterPart = character.id ?? character.anilistCharacterId ?? character.name ?? 'character';
+    return String(animePart) + ':' + String(characterPart) + ':import-' + index;
+  }
+  function loadTierJSON(data){
+    const tiers = normaliseTierImportData(data);
+    const allowedTiers = new Set(TIERS.map(t => t.key));
+
+    state.stopRequested = true;
+    state.animeTitles = [];
+    state.anime = [];
+    state.characters = [];
+    state.keepMap.clear();
+    state.tierMap.clear();
+    state.tierOrder.clear();
+    TIERS.forEach(t => state.tierOrder.set(t.key, []));
+
+    const animeByKey = new Map();
+    let importedCount = 0;
+    tiers.forEach(tierBlock => {
+      const tierName = String(tierBlock?.tier ?? tierBlock?.key ?? tierBlock?.name ?? 'To Sort');
+      const targetTier = allowedTiers.has(tierName) ? tierName : 'To Sort';
+      const characters = Array.isArray(tierBlock?.characters) ? tierBlock.characters : [];
+      characters.forEach(character => {
+        importedCount += 1;
+        const internalId = makeImportedCharacterId(character || {}, importedCount);
+        const animeTitle = character?.animeTitle || character?.anime || character?.mediaTitle || 'Unknown anime';
+        const animeId = character?.animeId ?? character?.mediaId ?? animeTitle;
+        const item = {
+          id: internalId,
+          anilistCharacterId: character?.id ?? character?.anilistCharacterId ?? null,
+          name: character?.name || 'Unknown character',
+          image: character?.image || null,
+          siteUrl: character?.url || character?.siteUrl || null,
+          favourites: Number(character?.favourites || 0),
+          animeId,
+          animeTitle,
+          animeSiteUrl: character?.animeUrl || character?.animeSiteUrl || null,
+          popularityRankWithinAnime: Number(character?.popularityRankWithinAnime || 0),
+          checkedCandidateCount: Number(character?.checkedCandidateCount || 0)
+        };
+        state.characters.push(item);
+        state.keepMap.set(item.id, true);
+        state.tierMap.set(item.id, targetTier);
+        state.tierOrder.get(targetTier).push(item.id);
+        const animeKey = String(animeId);
+        if(!animeByKey.has(animeKey)) animeByKey.set(animeKey, { id: animeId, title: animeTitle, siteUrl: item.animeSiteUrl || null });
+      });
+    });
+
+    if(!state.characters.length) throw new Error('The JSON did not contain any characters to import.');
+    state.anime = Array.from(animeByKey.values());
+    $('#logBox').textContent = '';
+    const importLogDetails = $('#fetchLogDetails');
+    if(importLogDetails) importLogDetails.open = true;
+    log('Imported saved tier-list JSON.');
+    log('Characters loaded: ' + state.characters.length);
+    log('Anime represented: ' + state.anime.length);
+    $('#progBar').style.width = '100%';
+    $('#progText').textContent = 'Imported ' + state.characters.length + ' character(s) from JSON.';
+    buildReviewUI();
+    renderTierBoard();
+    showPanel('#panelTier');
+  }
+  async function importTierJSONFile(file){
+    if(!file) return;
+    try{
+      const text = await file.text();
+      const data = JSON.parse(text);
+      loadTierJSON(data);
+      toast('Tier list imported from JSON.');
+    }catch(err){
+      toast('Could not import JSON.');
+      $('#progText').textContent = 'Import failed.';
+      log('JSON import error: ' + err.message);
+    }finally{
+      $('#jsonFileInput').value = '';
+    }
+  }
+
+  function downloadJSON(){
+    const blob = new Blob([JSON.stringify(exportTierJSON(), null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'anime-character-tier-list.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  }
+
+  $('#jsonFileInput').addEventListener('change', (e) => { importTierJSONFile(e.target.files && e.target.files[0]); });
+  $('#btnFetch').addEventListener('click', () => { fetchAll(); });
+  $('#btnStop').addEventListener('click', () => { state.stopRequested = true; $('#btnStop').disabled = true; log('Stop requested. Finishing/aborting the current wait or request…'); });
+  $('#btnClear').addEventListener('click', () => {
+    state.stopRequested = true;
+    state.animeTitles = [];
+    state.anime = [];
+    state.characters = [];
+    state.keepMap.clear();
+    state.tierMap.clear();
+    state.tierOrder.clear();
+    $('#animeInput').value = '';
+    $('#characterLimit').value = '5';
+    $('#animeBatchSize').value = String(DEFAULT_SETTINGS.animeBatchSize);
+    $('#characterBatchSize').value = String(DEFAULT_SETTINGS.characterBatchSize);
+    $('#characterCandidatePoolSize').value = String(DEFAULT_SETTINGS.characterCandidatePoolSize);
+    $('#requestDelayMs').value = String(DEFAULT_SETTINGS.requestDelayMs);
+    $('#errorCooldownSec').value = String(DEFAULT_SETTINGS.errorCooldownMs / 1000);
+    $('#jsonFileInput').value = '';
+    $('#logBox').textContent = '';
+    const fetchLogDetails = $('#fetchLogDetails');
+    if(fetchLogDetails) fetchLogDetails.open = false;
+    $('#progBar').style.width = '0%';
+    $('#progText').textContent = 'Ready.';
+    showPanel('#panelInput');
+    toast('Cleared.');
+  });
+  $('#filterInput').addEventListener('input', renderReviewGrid);
+  $('#btnAll').addEventListener('click', () => {
+    state.characters.forEach(c => state.keepMap.set(c.id, true));
+    renderReviewGrid();
+    $('#reviewHint').textContent = 'Keeping ' + state.characters.length + ' characters out of ' + state.characters.length + '.';
+  });
+  $('#btnNone').addEventListener('click', () => {
+    state.characters.forEach(c => state.keepMap.set(c.id, false));
+    renderReviewGrid();
+    $('#reviewHint').textContent = 'Keeping 0 characters out of ' + state.characters.length + '.';
+  });
+  $('#reviewGrid').addEventListener('change', (e) => {
+    const cb = e.target;
+    if(cb && cb.matches('input[type="checkbox"][data-id]')){
+      state.keepMap.set(cb.dataset.id, cb.checked);
+      $('#reviewHint').textContent = 'Keeping ' + selectedCharacters().length + ' characters out of ' + state.characters.length + '.';
+    }
+  });
+  document.body.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-open]');
+    if(btn){
+      const url = btn.getAttribute('data-open');
+      if(url) window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  });
+  $('#btnStartTier').addEventListener('click', () => { if(!buildTierState()) return; renderTierBoard(); showPanel('#panelTier'); });
+  $('#btnBackToReview').addEventListener('click', () => showPanel('#panelReview'));
+  $('#btnRandomise').addEventListener('click', randomiseToSort);
+  $('#btnResetTiers').addEventListener('click', () => { if(!buildTierState()) return; renderTierBoard(); toast('Tiers reset.'); });
+  $('#btnCopyJSON').addEventListener('click', async () => {
+    const json = JSON.stringify(exportTierJSON(), null, 2);
+    try {
+      await navigator.clipboard.writeText(json);
+      toast('Copied JSON to clipboard.');
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = json;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      toast('Copied JSON.');
+    }
+  });
+  $('#btnDownloadJSON').addEventListener('click', () => { downloadJSON(); toast('JSON download started.'); });
+  $('#logBox').textContent = '\n';
+})();
+</script>
+
+</body>
+</html>
