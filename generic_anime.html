@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anime Generic Score</title>
+  <style>
+    :root {
+      --bg: #f7f7f5;
+      --card: rgba(255, 255, 255, 0.84);
+      --card-solid: #ffffff;
+      --text: #171717;
+      --muted: #707070;
+      --line: #e8e6df;
+      --soft: #f0efea;
+      --accent: #111111;
+      --accent-muted: #343434;
+      --danger: #9c2f2f;
+      --success: #2f6f4e;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.08);
+      --radius: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.9), transparent 32rem),
+        linear-gradient(135deg, #fbfbfa 0%, var(--bg) 48%, #eeeeea 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+    }
+
+    .shell {
+      width: min(980px, 100%);
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.58);
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 7vw, 70px);
+      letter-spacing: -0.075em;
+      line-height: 0.94;
+      font-weight: 760;
+    }
+
+    .sub {
+      margin: 16px auto 0;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(22px);
+      border: 1px solid rgba(232, 230, 223, 0.88);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(22px, 4vw, 38px);
+      overflow: hidden;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--card-solid);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 15px 16px;
+      font: inherit;
+      outline: none;
+      transition: border 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    }
+
+    input:focus {
+      border-color: #c9c6bd;
+      box-shadow: 0 0 0 5px rgba(17,17,17,0.055);
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 18px;
+      padding: 15px 18px;
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
+      transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 14px 30px rgba(17, 17, 17, 0.16);
+    }
+
+    .primary:hover {
+      background: var(--accent-muted);
+    }
+
+    .secondary {
+      background: var(--soft);
+      color: var(--text);
+    }
+
+    .ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+    }
+
+    .danger {
+      color: var(--danger);
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .candidate {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 18px;
+      align-items: center;
+      background: var(--card-solid);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 14px;
+    }
+
+    .candidate img {
+      width: 92px;
+      height: 128px;
+      object-fit: cover;
+      border-radius: 18px;
+      background: var(--soft);
+    }
+
+    .candidate h3 {
+      margin: 0 0 7px;
+      font-size: 22px;
+      letter-spacing: -0.045em;
+    }
+
+    .candidate p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .character-results {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .character-card {
+      display: grid;
+      gap: 12px;
+      background: var(--card-solid);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 12px;
+      text-align: left;
+      min-width: 0;
+    }
+
+    .character-card img {
+      width: 100%;
+      aspect-ratio: 4 / 5.3;
+      object-fit: cover;
+      border-radius: 18px;
+      background: var(--soft);
+    }
+
+    .character-card h3 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+    }
+
+    .character-card p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.68);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 6px 10px 6px 6px;
+      font-size: 13px;
+    }
+
+    .pill img {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      object-fit: cover;
+      background: var(--soft);
+      border: 1px solid var(--line);
+    }
+
+    .pill button {
+      padding: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: #eceae4;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .anime-context {
+      display: grid;
+      grid-template-columns: 82px 1fr;
+      gap: 16px;
+      align-items: center;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 12px;
+      margin-bottom: 18px;
+    }
+
+    .anime-context img {
+      width: 82px;
+      height: 116px;
+      object-fit: cover;
+      border-radius: 18px;
+      background: var(--soft);
+    }
+
+    .anime-context h3 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.045em;
+    }
+
+    .anime-context p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .notice {
+      margin-top: 16px;
+      padding: 13px 15px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.56);
+      border-radius: 18px;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .loader {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 16px;
+    }
+
+    .loader.show {
+      display: flex;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #dbd8cf;
+      border-top-color: #111;
+      border-radius: 50%;
+      animation: spin 850ms linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .progress {
+      width: 100%;
+      height: 8px;
+      background: var(--soft);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 260ms ease;
+    }
+
+    .score-wrap {
+      display: grid;
+      grid-template-columns: minmax(190px, 260px) 1fr;
+      gap: 26px;
+      align-items: center;
+    }
+
+    .score-ring {
+      aspect-ratio: 1;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background:
+        conic-gradient(var(--accent) calc(var(--score) * 1%), #e9e7df 0);
+      padding: 14px;
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .score-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--card-solid);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border: 1px solid var(--line);
+    }
+
+    .score-number {
+      font-size: clamp(42px, 8vw, 72px);
+      letter-spacing: -0.08em;
+      font-weight: 780;
+      line-height: 0.9;
+    }
+
+    .score-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .result-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .result {
+      display: grid;
+      grid-template-columns: 1.05fr 1.2fr;
+      gap: 12px;
+      align-items: stretch;
+      background: var(--card-solid);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 14px;
+    }
+
+    .picked-character {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .picked-character img {
+      width: 54px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 14px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+    }
+
+    .result strong {
+      letter-spacing: -0.025em;
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 5px;
+    }
+
+    .top-list {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .top-list span {
+      color: var(--text);
+      font-weight: 620;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 18px;
+      }
+
+      form, .score-wrap, .result {
+        grid-template-columns: 1fr;
+      }
+
+      form {
+        display: grid;
+      }
+
+      .candidate {
+        grid-template-columns: 74px 1fr;
+      }
+
+      .candidate img {
+        width: 74px;
+        height: 104px;
+      }
+
+      .character-results {
+        grid-template-columns: 1fr;
+      }
+
+      .character-card {
+        grid-template-columns: 76px 1fr;
+        align-items: center;
+      }
+
+      .character-card img {
+        width: 76px;
+        height: 104px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow"><span class="dot"></span> MyAnimeList-inspired popularity check</div>
+      <h1>How generic is your anime taste?</h1>
+      <p class="sub">Add anime, pick your favourite character from each, then get a score based on how popular your choices are among MAL favourites.</p>
+    </section>
+
+    <section class="card">
+      <div id="animeStep">
+        <div class="section-title">
+          <h2>Add anime</h2>
+          <span class="counter" id="animeCount">0 added</span>
+        </div>
+        <form id="animeForm">
+          <input id="animeInput" type="search" placeholder="Search for an anime, e.g. Frieren" autocomplete="off" required />
+          <button class="primary" type="submit">Submit</button>
+        </form>
+        <div id="animeCandidate" class="stack"></div>
+        <div class="pill-row" id="animePills"></div>
+        <div class="actions">
+          <button id="beginBtn" class="primary hidden" type="button">Begin</button>
+          <button id="clearBtn" class="ghost hidden" type="button">Clear all</button>
+        </div>
+        <div class="loader" id="animeLoader"><span class="spinner"></span><span>Searching anime…</span></div>
+        <div class="notice">Tip: add as many anime as you like. Each confirmed anime becomes part of the final score.</div>
+      </div>
+
+      <div id="characterStep" class="hidden">
+        <div class="progress"><span id="progressBar"></span></div>
+        <div class="section-title">
+          <h2 id="characterHeading">Choose character</h2>
+          <span class="counter" id="characterCounter"></span>
+        </div>
+        <div id="animeContext" class="anime-context"></div>
+        <form id="characterForm">
+          <input id="characterInput" type="search" placeholder="Type your favourite character" autocomplete="off" required />
+          <button class="primary" type="submit">Submit</button>
+        </form>
+        <div id="characterCandidate" class="stack"></div>
+        <div class="loader" id="characterLoader"><span class="spinner"></span><span>Searching characters…</span></div>
+        <div class="notice" id="characterNotice">Character matching is checked against the selected anime’s cast where possible.</div>
+      </div>
+
+      <div id="resultStep" class="hidden">
+        <div class="section-title">
+          <h2>Your results</h2>
+          <span class="counter">Complete</span>
+        </div>
+        <div class="score-wrap">
+          <div class="score-ring" id="scoreRing" style="--score: 0">
+            <div class="score-inner">
+              <div>
+                <div class="score-number" id="scoreNumber">0</div>
+                <div class="score-label">generic score</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h2 id="scoreTitle" style="margin:0 0 10px; letter-spacing:-0.05em;">Calculating…</h2>
+            <p class="sub" id="scoreCopy" style="margin:0; max-width:unset;"></p>
+            <div class="actions">
+              <button id="restartBtn" class="primary" type="button">Start again</button>
+            </div>
+          </div>
+        </div>
+        <div class="result-grid" id="resultsGrid"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API = 'https://api.jikan.moe/v4';
+    const state = {
+      anime: [],
+      currentIndex: 0,
+      picks: []
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const els = {
+      animeStep: $('animeStep'),
+      characterStep: $('characterStep'),
+      resultStep: $('resultStep'),
+      animeForm: $('animeForm'),
+      animeInput: $('animeInput'),
+      animeCandidate: $('animeCandidate'),
+      animeLoader: $('animeLoader'),
+      animeCount: $('animeCount'),
+      animePills: $('animePills'),
+      beginBtn: $('beginBtn'),
+      clearBtn: $('clearBtn'),
+      characterForm: $('characterForm'),
+      characterInput: $('characterInput'),
+      characterCandidate: $('characterCandidate'),
+      characterLoader: $('characterLoader'),
+      characterHeading: $('characterHeading'),
+      characterCounter: $('characterCounter'),
+      characterNotice: $('characterNotice'),
+      animeContext: $('animeContext'),
+      progressBar: $('progressBar'),
+      resultsGrid: $('resultsGrid'),
+      scoreRing: $('scoreRing'),
+      scoreNumber: $('scoreNumber'),
+      scoreTitle: $('scoreTitle'),
+      scoreCopy: $('scoreCopy'),
+      restartBtn: $('restartBtn')
+    };
+
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    async function api(path) {
+      const response = await fetch(`${API}${path}`);
+      if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+      return response.json();
+    }
+
+    async function withLoading(loader, task) {
+      loader.classList.add('show');
+      try {
+        await sleep(180);
+        return await task();
+      } finally {
+        loader.classList.remove('show');
+      }
+    }
+
+    function imageOf(item) {
+      return item?.images?.jpg?.large_image_url || item?.images?.jpg?.image_url || '';
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+      }[ch]));
+    }
+
+    function concise(text, max = 180) {
+      if (!text) return 'No synopsis available.';
+      return text.length > max ? `${text.slice(0, max).trim()}…` : text;
+    }
+
+    function showOnly(step) {
+      [els.animeStep, els.characterStep, els.resultStep].forEach(el => el.classList.add('hidden'));
+      step.classList.remove('hidden');
+    }
+
+    function updateAnimeUI() {
+      els.animeCount.textContent = `${state.anime.length} added`;
+      els.beginBtn.classList.toggle('hidden', state.anime.length === 0);
+      els.clearBtn.classList.toggle('hidden', state.anime.length === 0);
+      els.animePills.innerHTML = state.anime.map((anime, idx) => `
+        <span class="pill">
+          ${anime.image ? `<img src="${escapeHtml(anime.image)}" alt="">` : ''}
+          ${escapeHtml(anime.title)}
+          <button type="button" aria-label="Remove ${escapeHtml(anime.title)}" data-remove="${idx}">×</button>
+        </span>
+      `).join('');
+    }
+
+    function candidateMarkup({image, title, meta, description, yesText = 'Confirm', noText = 'Search again'}) {
+      return `
+        <article class="candidate">
+          ${image ? `<img src="${escapeHtml(image)}" alt="">` : `<div style="width:92px;height:128px;border-radius:18px;background:var(--soft);"></div>`}
+          <div>
+            <h3>${escapeHtml(title)}</h3>
+            <p>${escapeHtml(meta || '')}</p>
+            <p style="margin-top:8px;">${escapeHtml(description || '')}</p>
+            <div class="actions">
+              <button class="primary" type="button" data-confirm="true">${yesText}</button>
+              <button class="secondary" type="button" data-reject="true">${noText}</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function characterChoiceMarkup(results, animeTitle) {
+      return `
+        <div class="character-results">
+          ${results.map((character, idx) => `
+            <article class="character-card">
+              ${imageOf(character) ? `<img src="${escapeHtml(imageOf(character))}" alt="">` : `<div style="width:100%;aspect-ratio:4/5.3;border-radius:18px;background:var(--soft);"></div>`}
+              <div>
+                <h3>${escapeHtml(character.name)}</h3>
+                <p>${escapeHtml(character.animeTitle || animeTitle)}</p>
+                <button class="primary" type="button" data-character-index="${idx}" style="margin-top:12px;width:100%;">Confirm</button>
+              </div>
+            </article>
+          `).join('')}
+        </div>
+        <div class="actions">
+          <button class="secondary" type="button" data-reject="true">Search again</button>
+        </div>
+      `;
+    }
+
+    async function searchAnime(query) {
+      const data = await api(`/anime?q=${encodeURIComponent(query)}&limit=5&sfw=true`);
+      return (data.data || []).filter(item => item.type !== 'Music');
+    }
+
+    async function getAnimeCharacters(animeId) {
+      const data = await api(`/anime/${animeId}/characters`);
+      return (data.data || [])
+        .map(item => ({
+          ...item.character,
+          animeTitle: '',
+          role: item.role,
+          favorites: Number(item.favorites || item.character?.favorites || 0)
+        }))
+        .filter(character => character?.mal_id)
+        .sort((a, b) => b.favorites - a.favorites);
+    }
+
+    function normalise(value) {
+      return String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    function matchScore(query, name) {
+      const q = normalise(query);
+      const n = normalise(name);
+      if (!q || !n) return 0;
+      if (n === q) return 1000;
+      if (n.startsWith(q)) return 800 - Math.max(0, n.length - q.length);
+      if (n.includes(q)) return 620 - n.indexOf(q);
+
+      const tokens = String(query || '').toLowerCase().split(/\s+/).filter(Boolean);
+      const tokenHits = tokens.filter(token => n.includes(normalise(token))).length;
+      if (tokenHits) return 350 + tokenHits * 80;
+
+      let seq = 0;
+      let pos = 0;
+      for (const ch of q) {
+        const found = n.indexOf(ch, pos);
+        if (found === -1) break;
+        seq += 1;
+        pos = found + 1;
+      }
+      return seq >= Math.ceil(q.length * 0.7) ? 180 + seq : 0;
+    }
+
+    function findBestCharacters(query, characters, animeTitle) {
+      return (characters || [])
+        .map(character => ({
+          ...character,
+          animeTitle,
+          _score: matchScore(query, character.name)
+        }))
+        .filter(character => character._score > 0)
+        .sort((a, b) => b._score - a._score || b.favorites - a.favorites)
+        .slice(0, 3);
+    }
+
+    async function fallbackCharacterSearch(query) {
+      const data = await api(`/characters?q=${encodeURIComponent(query)}&limit=3&order_by=favorites&sort=desc`);
+      return (data.data || []).slice(0, 3).map(character => ({
+        ...character,
+        animeTitle: 'Global character result',
+        favorites: Number(character.favorites || 0),
+        fallback: true
+      }));
+    }
+
+    els.animeForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const query = els.animeInput.value.trim();
+      if (!query) return;
+
+      els.animeCandidate.innerHTML = '';
+      try {
+        const results = await withLoading(els.animeLoader, () => searchAnime(query));
+        const anime = results[0];
+        if (!anime) {
+          els.animeCandidate.innerHTML = `<div class="notice danger">No anime found. Try a different title.</div>`;
+          return;
+        }
+
+        els.animeCandidate.innerHTML = candidateMarkup({
+          image: imageOf(anime),
+          title: anime.title_english || anime.title,
+          meta: [anime.type, anime.year, anime.score ? `MAL ${anime.score}` : null].filter(Boolean).join(' • '),
+          description: concise(anime.synopsis),
+          yesText: 'Yes, add this',
+          noText: 'No, search again'
+        });
+
+        els.animeCandidate.querySelector('[data-confirm]').onclick = () => {
+          if (!state.anime.some(a => a.mal_id === anime.mal_id)) {
+            state.anime.push({
+              mal_id: anime.mal_id,
+              title: anime.title_english || anime.title,
+              image: imageOf(anime)
+            });
+          }
+          els.animeInput.value = '';
+          els.animeCandidate.innerHTML = '';
+          updateAnimeUI();
+          els.animeInput.focus();
+        };
+
+        els.animeCandidate.querySelector('[data-reject]').onclick = () => {
+          els.animeCandidate.innerHTML = '';
+          els.animeInput.select();
+        };
+      } catch (error) {
+        els.animeCandidate.innerHTML = `<div class="notice danger">Something went wrong while searching. Please try again in a moment.</div>`;
+      }
+    });
+
+    els.animePills.addEventListener('click', (event) => {
+      const index = event.target.dataset.remove;
+      if (index === undefined) return;
+      state.anime.splice(Number(index), 1);
+      updateAnimeUI();
+    });
+
+    els.clearBtn.addEventListener('click', () => {
+      state.anime = [];
+      state.picks = [];
+      state.currentIndex = 0;
+      els.animeCandidate.innerHTML = '';
+      updateAnimeUI();
+    });
+
+    els.beginBtn.addEventListener('click', async () => {
+      state.currentIndex = 0;
+      state.picks = [];
+      showOnly(els.characterStep);
+      await setupCharacterPrompt();
+    });
+
+    async function setupCharacterPrompt() {
+      const anime = state.anime[state.currentIndex];
+      const total = state.anime.length;
+      els.characterCandidate.innerHTML = '';
+      els.characterInput.value = '';
+      els.characterHeading.textContent = 'Choose character';
+      els.characterCounter.textContent = `${state.currentIndex + 1} of ${total}`;
+      els.progressBar.style.width = `${(state.currentIndex / total) * 100}%`;
+      els.animeContext.innerHTML = `
+        ${anime.image ? `<img src="${escapeHtml(anime.image)}" alt="">` : `<div style="width:82px;height:116px;border-radius:18px;background:var(--soft);"></div>`}
+        <div>
+          <h3>${escapeHtml(anime.title)}</h3>
+          <p>Type your favourite character from this anime, then confirm the correct result below.</p>
+        </div>
+      `;
+      els.characterNotice.textContent = 'Loading this anime’s character list…';
+
+      try {
+        anime.characters = anime.characters || await withLoading(els.characterLoader, () => getAnimeCharacters(anime.mal_id));
+        anime.characters = anime.characters.map(character => ({ ...character, animeTitle: anime.title }));
+        els.characterNotice.textContent = `Ready. Search for your favourite character from ${anime.title}.`;
+      } catch (error) {
+        anime.characters = [];
+        els.characterNotice.textContent = 'Could not load the anime-specific character list. I’ll use the global character search as a fallback.';
+      }
+
+      els.characterInput.focus();
+    }
+
+    els.characterForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const query = els.characterInput.value.trim();
+      if (!query) return;
+
+      const anime = state.anime[state.currentIndex];
+      els.characterCandidate.innerHTML = '';
+
+      try {
+        let results = findBestCharacters(query, anime.characters || [], anime.title);
+        let inAnimeList = results.length > 0;
+
+        if (!results.length) {
+          results = await withLoading(els.characterLoader, () => fallbackCharacterSearch(query));
+          inAnimeList = false;
+        }
+
+        if (!results.length) {
+          els.characterCandidate.innerHTML = `<div class="notice danger">No character found. Try another spelling or surname.</div>`;
+          return;
+        }
+
+        els.characterCandidate.innerHTML = characterChoiceMarkup(results, anime.title);
+
+        els.characterCandidate.querySelectorAll('[data-character-index]').forEach(button => {
+          button.onclick = async () => {
+            const character = results[Number(button.dataset.characterIndex)];
+            const rank = inAnimeList ? (anime.characters.findIndex(c => c.mal_id === character.mal_id) + 1) : null;
+            const topThree = (anime.characters || []).slice(0, 3);
+
+            state.picks.push({
+              anime,
+              character,
+              rank,
+              topThree,
+              totalRanked: (anime.characters || []).length,
+              inAnimeList
+            });
+            state.currentIndex += 1;
+
+            if (state.currentIndex >= state.anime.length) {
+              els.progressBar.style.width = '100%';
+              renderResults();
+            } else {
+              await setupCharacterPrompt();
+            }
+          };
+        });
+
+        els.characterCandidate.querySelector('[data-reject]').onclick = () => {
+          els.characterCandidate.innerHTML = '';
+          els.characterInput.select();
+        };
+      } catch (error) {
+        els.characterCandidate.innerHTML = `<div class="notice danger">Something went wrong while searching. Please try again in a moment.</div>`;
+      }
+    });
+
+    function pickGenericScore(pick) {
+      if (!pick.rank) return 45;
+
+      /*
+        More sensitive generic scoring:
+        - Rank #1 is 100.
+        - Ranks #2–#8 drop meaningfully but still count as broadly recognisable.
+        - After #8, scores fall off quickly because most users are unlikely to pick
+          deep-cut characters unless they are genuinely less generic.
+      */
+      const rank = Math.max(1, pick.rank);
+      const score = 100 * Math.exp(-0.18 * (rank - 1));
+
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    function scoreTone(score) {
+      if (score >= 82) return ['Certified mainstream protagonist', 'Your favourites are the favourites. You appear to gravitate toward characters with serious crowd appeal.'];
+      if (score >= 62) return ['Tastefully popular', 'Your choices lean recognisable, but not always the obvious number-one pick.'];
+      if (score >= 42) return ['Balanced taste', 'You sit in the middle: some popular picks, some more personal favourites.'];
+      if (score >= 22) return ['Niche enjoyer', 'Your favourites often live below the headline popularity rankings.'];
+      return ['Deep-cut specialist', 'You are swerving the consensus hard. These are not the usual crowd picks.'];
+    }
+
+    function renderResults() {
+      const scores = state.picks.map(pickGenericScore);
+      const average = Math.round(scores.reduce((sum, value) => sum + value, 0) / Math.max(scores.length, 1));
+      const [title, copy] = scoreTone(average);
+
+      els.scoreRing.style.setProperty('--score', average);
+      els.scoreNumber.textContent = average;
+      els.scoreTitle.textContent = title;
+      els.scoreCopy.textContent = copy;
+
+      els.resultsGrid.innerHTML = state.picks.map((pick, index) => {
+        const top = pick.topThree?.length ? pick.topThree : [];
+        const selectedScore = scores[index];
+        return `
+          <article class="result">
+            <div>
+              <strong>${escapeHtml(pick.anime.title)}</strong>
+              <div class="picked-character">
+                ${imageOf(pick.character) ? `<img src="${escapeHtml(imageOf(pick.character))}" alt="">` : `<div style="width:54px;height:70px;border-radius:14px;background:var(--soft);"></div>`}
+                <div class="mini">
+                  Your pick: <span style="color:var(--text);font-weight:650;">${escapeHtml(pick.character.name)}</span><br>
+                  ${pick.rank ? `Popularity rank in cast: #${pick.rank}` : 'Rank unavailable for this anime'}<br>
+                  Pick score contribution: ${selectedScore}/100
+                </div>
+              </div>
+            </div>
+            <div class="top-list">
+              <div>Three most popular characters:</div>
+              ${top.length ? top.map((c, i) => `<div>${i + 1}. <span>${escapeHtml(c.name)}</span>${c.favorites ? ` — ${c.favorites.toLocaleString()} favourites` : ''}</div>`).join('') : '<div>Popularity list unavailable.</div>'}
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      showOnly(els.resultStep);
+    }
+
+    els.restartBtn.addEventListener('click', () => {
+      state.anime = [];
+      state.currentIndex = 0;
+      state.picks = [];
+      els.animeCandidate.innerHTML = '';
+      els.characterCandidate.innerHTML = '';
+      updateAnimeUI();
+      showOnly(els.animeStep);
+      els.animeInput.focus();
+    });
+
+    updateAnimeUI();
+  </script>
+</body>
+</html>
