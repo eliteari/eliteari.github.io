@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anime Roulette</title>
+  <style>
+    :root {
+      --bg: #08090d;
+      --panel: rgba(255, 255, 255, 0.06);
+      --panel-strong: rgba(255, 255, 255, 0.1);
+      --text: #f7f7fb;
+      --muted: rgba(247, 247, 251, 0.62);
+      --faint: rgba(247, 247, 251, 0.36);
+      --line: rgba(255, 255, 255, 0.12);
+      --accent: #a78bfa;
+      --accent-2: #22d3ee;
+      --danger: #fb7185;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --shadow: 0 28px 80px rgba(0, 0, 0, 0.4);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 0%, rgba(167, 139, 250, 0.22), transparent 34%),
+        radial-gradient(circle at 82% 12%, rgba(34, 211, 238, 0.18), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(251, 113, 133, 0.12), transparent 34%),
+        var(--bg);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: radial-gradient(circle at center, black, transparent 78%);
+    }
+
+    button, input, textarea { font: inherit; }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 64px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+      font-size: clamp(1.2rem, 2vw, 1.6rem);
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 18px 38px rgba(167, 139, 250, 0.28);
+      color: #05060a;
+      font-weight: 900;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.045);
+      color: var(--muted);
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      backdrop-filter: blur(18px);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      position: relative;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.078), rgba(255,255,255,0.042));
+      backdrop-filter: blur(26px);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .intro {
+      padding: clamp(24px, 4vw, 44px);
+      min-height: 390px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 720px;
+      font-size: clamp(2.6rem, 7vw, 5.8rem);
+      line-height: 0.9;
+      letter-spacing: -0.085em;
+    }
+
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(120deg, #fff, #c4b5fd 42%, #67e8f9 78%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .lead {
+      max-width: 680px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 1.04rem;
+      line-height: 1.7;
+    }
+
+    .steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 999px;
+      padding: 9px 12px;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.9rem;
+    }
+
+    .setup {
+      padding: 22px;
+      display: grid;
+      gap: 15px;
+    }
+
+    .field { display: grid; gap: 9px; }
+
+    label {
+      color: rgba(255,255,255,0.82);
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    textarea, input[type="number"], input[type="url"], input[type="text"] {
+      width: 100%;
+      color: var(--text);
+      background: rgba(0,0,0,0.23);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      outline: none;
+      transition: border-color 180ms, box-shadow 180ms, background 180ms;
+    }
+
+    textarea {
+      min-height: 216px;
+      resize: vertical;
+      padding: 16px;
+      line-height: 1.45;
+    }
+
+    input[type="number"], input[type="url"], input[type="text"] { padding: 13px 14px; }
+
+    textarea:focus, input[type="number"]:focus, input[type="url"]:focus, input[type="text"]:focus {
+      border-color: rgba(167, 139, 250, 0.8);
+      box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.13);
+      background: rgba(0,0,0,0.32);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .settings-row {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 2px;
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      border-radius: 18px;
+      min-height: 50px;
+      padding: 0 18px;
+      color: white;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      transition: transform 160ms, opacity 160ms, filter 160ms, background 160ms;
+      user-select: none;
+    }
+
+    .btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn:active:not(:disabled) { transform: translateY(0) scale(0.99); }
+    .btn:disabled { cursor: not-allowed; opacity: 0.48; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #05060a;
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.075);
+      border: 1px solid var(--line);
+    }
+
+    .hint {
+      color: var(--faint);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .manual-fixes {
+      display: grid;
+      gap: 16px;
+      padding: 22px;
+      margin-bottom: 22px;
+    }
+
+    .manual-fixes[hidden] { display: none; }
+
+    .manual-fixes-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .manual-fixes h2 {
+      margin: 0 0 7px;
+      letter-spacing: -0.04em;
+      font-size: clamp(1.25rem, 2.4vw, 1.8rem);
+    }
+
+    .manual-fix-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .manual-fix-row {
+      display: grid;
+      grid-template-columns: minmax(180px, 0.9fr) minmax(220px, 1.1fr);
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      border-radius: var(--radius-lg);
+      padding: 12px;
+    }
+
+    .manual-fix-title {
+      color: rgba(255,255,255,0.88);
+      font-weight: 850;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    .manual-fix-reason {
+      margin-top: 5px;
+      color: var(--faint);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .manual-fix-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn-small {
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 14px;
+      font-size: 0.9rem;
+    }
+
+    .status-bar {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      border-radius: var(--radius-lg);
+      margin-bottom: 22px;
+    }
+
+    .status-bar.show { display: flex; }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.18);
+      border-top-color: white;
+      border-radius: 999px;
+      animation: spin 850ms linear infinite;
+      flex: 0 0 auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .progress-wrap {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: inherit;
+      transition: width 220ms ease;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin: 24px 0 16px;
+    }
+
+    .toolbar h2 {
+      margin: 0;
+      letter-spacing: -0.04em;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+    }
+
+    .counter {
+      color: var(--muted);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+      gap: 16px;
+      min-height: 180px;
+    }
+
+    .anime-card {
+      position: relative;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.055);
+      border-radius: 22px;
+      overflow: hidden;
+      min-height: 292px;
+      transform-origin: center;
+      transition: transform 360ms cubic-bezier(.2,.8,.2,1), opacity 360ms, filter 360ms, border-color 360ms;
+      box-shadow: 0 18px 54px rgba(0,0,0,0.25);
+    }
+
+    .anime-card:hover { transform: translateY(-3px); }
+
+    .poster {
+      width: 100%;
+      aspect-ratio: 3 / 4.2;
+      object-fit: cover;
+      display: block;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .placeholder {
+      width: 100%;
+      aspect-ratio: 3 / 4.2;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      text-align: center;
+      color: rgba(255,255,255,0.55);
+      background:
+        radial-gradient(circle at 30% 20%, rgba(167,139,250,0.22), transparent 34%),
+        rgba(255,255,255,0.045);
+    }
+
+    .anime-info { padding: 13px 13px 15px; }
+
+    .anime-title {
+      margin: 0;
+      font-weight: 850;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      font-size: 0.98rem;
+    }
+
+    .anime-meta {
+      margin: 7px 0 0;
+      color: var(--faint);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #05060a;
+      background: rgba(255,255,255,0.86);
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 0.74rem;
+      font-weight: 900;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.22);
+    }
+
+
+
+    .anime-card.selecting {
+      z-index: 3;
+      border-color: rgba(251, 191, 36, 0.95);
+      box-shadow:
+        0 0 0 4px rgba(251, 191, 36, 0.16),
+        0 26px 90px rgba(251, 191, 36, 0.2),
+        0 18px 54px rgba(0,0,0,0.3);
+      transform: translateY(-8px) scale(1.035);
+      animation: selectionPulse 520ms ease-in-out infinite alternate;
+    }
+
+    .anime-card.selecting::before {
+      content: "▼";
+      position: absolute;
+      top: -3px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      color: var(--warning);
+      font-size: 2rem;
+      line-height: 1;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.5));
+      animation: pointerBounce 360ms ease-in-out infinite alternate;
+    }
+
+    .anime-card.selecting::after {
+      content: "Selecting";
+      position: absolute;
+      top: 42px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      border-radius: 999px;
+      padding: 6px 9px;
+      color: #2c1d00;
+      background: linear-gradient(135deg, var(--warning), #fde68a);
+      font-size: 0.72rem;
+      font-weight: 950;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.24);
+    }
+
+    @keyframes selectionPulse {
+      from { filter: brightness(1) saturate(1); }
+      to { filter: brightness(1.18) saturate(1.35); }
+    }
+
+    @keyframes pointerBounce {
+      from { transform: translateX(-50%) translateY(-2px); }
+      to { transform: translateX(-50%) translateY(5px); }
+    }
+
+    .anime-card.removing {
+      z-index: 2;
+      border-color: rgba(251, 113, 133, 0.75);
+      animation: eliminate 760ms cubic-bezier(.18,.9,.2,1) forwards;
+    }
+
+    @keyframes eliminate {
+      0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; filter: saturate(1); }
+      30% { transform: translateY(-12px) scale(1.04) rotate(1deg); opacity: 1; filter: saturate(1.4); }
+      100% { transform: translateY(42px) scale(0.78) rotate(-5deg); opacity: 0; filter: blur(5px) grayscale(1); }
+    }
+
+    .anime-card.winner {
+      grid-column: span 2;
+      border-color: rgba(52, 211, 153, 0.8);
+      box-shadow: 0 28px 95px rgba(52, 211, 153, 0.18), 0 18px 54px rgba(0,0,0,0.32);
+      animation: winnerPop 900ms cubic-bezier(.18,.9,.2,1) both;
+    }
+
+    .anime-card.winner::after {
+      content: "Winner";
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border-radius: 999px;
+      padding: 7px 10px;
+      color: #052014;
+      background: linear-gradient(135deg, var(--success), #bef264);
+      font-size: 0.76rem;
+      font-weight: 950;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.24);
+    }
+
+    @keyframes winnerPop {
+      from { transform: scale(0.88); }
+      to { transform: scale(1); }
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: var(--radius-xl);
+      min-height: 210px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      padding: 24px;
+      background: rgba(255,255,255,0.035);
+    }
+
+    .toast-stack {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      display: grid;
+      gap: 10px;
+      z-index: 50;
+      width: min(380px, calc(100vw - 36px));
+    }
+
+    .toast {
+      border: 1px solid var(--line);
+      background: rgba(18, 20, 28, 0.92);
+      backdrop-filter: blur(18px);
+      border-radius: 18px;
+      padding: 13px 14px;
+      color: rgba(255,255,255,0.84);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.32);
+      animation: toastIn 240ms ease both;
+    }
+
+    @keyframes toastIn { from { transform: translateY(8px); opacity: 0; } }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(5, 6, 10, 0.74);
+      backdrop-filter: blur(18px);
+    }
+
+    .overlay.show { display: grid; }
+
+    .modal {
+      width: min(540px, 100%);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.055));
+      border-radius: 32px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .modal h3 {
+      margin: 14px 0 8px;
+      font-size: clamp(1.6rem, 4vw, 2.5rem);
+      letter-spacing: -0.06em;
+    }
+
+    .modal p { color: var(--muted); line-height: 1.6; margin: 0; }
+
+    .big-spinner {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto;
+      border: 3px solid rgba(255,255,255,0.14);
+      border-top-color: var(--accent-2);
+      border-radius: 999px;
+      animation: spin 800ms linear infinite;
+    }
+
+
+
+    .contenders-section {
+      transition: margin 260ms ease;
+      scroll-margin-top: 108px;
+    }
+
+    body.roulette-mode header,
+    body.roulette-mode .hero {
+      display: none;
+    }
+
+    body.roulette-mode .manual-fixes {
+      display: none !important;
+    }
+
+    body.roulette-mode .shell {
+      width: min(1500px, calc(100% - 32px));
+      min-height: 100vh;
+      padding-top: 18px;
+    }
+
+    body.roulette-mode,
+    body.roulette-mode .grid,
+    body.roulette-mode .anime-card {
+      overflow-anchor: none;
+    }
+
+    body.roulette-mode .status-bar {
+      position: sticky;
+      top: 14px;
+      z-index: 30;
+      background: rgba(18, 20, 28, 0.94);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.24);
+      margin-bottom: 24px;
+    }
+
+    body.roulette-mode .contenders-section {
+      scroll-margin-top: 118px;
+    }
+
+    body.roulette-mode .toolbar {
+      position: relative;
+      z-index: 1;
+      margin-top: 0;
+      flex-wrap: wrap;
+    }
+
+    body.roulette-mode .toolbar h2::after {
+      content: " mode";
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    body.roulette-mode .grid {
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 18px;
+      min-height: calc(100vh - 150px);
+      align-content: start;
+    }
+
+    body.roulette-mode .anime-card {
+      min-height: 326px;
+      scroll-margin-top: 118px;
+    }
+
+    @media (max-width: 860px) {
+      header { align-items: flex-start; flex-direction: column; }
+      .hero { grid-template-columns: 1fr; }
+      .intro { min-height: auto; }
+      .row, .actions, .settings-row { grid-template-columns: 1fr; }
+      .manual-fixes-header { flex-direction: column; }
+      .manual-fix-row { grid-template-columns: 1fr; }
+      .manual-fix-actions { justify-content: stretch; }
+      .manual-fix-actions .btn { flex: 1 1 180px; }
+      .anime-card.winner { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><div class="logo">AR</div><span>Anime Roulette</span></div>
+      <div class="pill">Jikan v4 lookup · English titles · poster grid · timed elimination</div>
+    </header>
+
+    <section class="hero">
+      <div class="card intro">
+        <div>
+          <h1><span class="gradient-text">Anime.</span><br />Selection.<br />Roulette.</h1>
+          <p class="lead">Drop in anime names, fetch their English titles and posters, then let the roulette remove options one by one until only tonight’s pick remains.</p>
+        </div>
+        <div class="steps">
+          <span class="step">1. Paste names</span>
+          <span class="step">2. Fetch metadata</span>
+          <span class="step">3. Set timing + speed</span>
+          <span class="step">4. Begin roulette</span>
+        </div>
+      </div>
+
+      <div class="card setup">
+        <div class="field">
+          <label for="animeInput">Anime names</label>
+          <textarea id="animeInput" spellcheck="false" placeholder="One per line, or comma separated&#10;&#10;Frieren: Beyond Journey's End&#10;Bocchi the Rock!&#10;Steins;Gate&#10;Mob Psycho 100&#10;Cowboy Bebop"></textarea>
+          <p class="hint">Tip: exact or common titles work best. Duplicate lines are automatically removed.</p>
+        </div>
+
+        <div class="row settings-row">
+          <div class="field">
+            <label for="delayInput">Selection time per round</label>
+            <input id="delayInput" type="number" min="0" max="60" step="0.25" value="2" />
+          </div>
+          <div class="field">
+            <label for="speedInput">Spin speed level</label>
+            <input id="speedInput" type="number" min="1" max="10" step="1" value="7" />
+          </div>
+          <div class="field">
+            <label for="batchInput">Requests per batch</label>
+            <input id="batchInput" type="number" min="1" max="3" value="2" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-ghost" id="sampleBtn" type="button">Use sample</button>
+          <button class="btn btn-primary" id="lookupBtn" type="button">Lookup anime</button>
+        </div>
+
+        <button class="btn btn-primary" id="beginBtn" type="button" disabled>Begin roulette</button>
+        <p class="hint">Lookups are throttled to reduce timeout/rate-limit issues.</p>
+      </div>
+    </section>
+
+    <section id="manualFixes" class="card manual-fixes" hidden>
+      <div class="manual-fixes-header">
+        <div>
+          <h2>Manual poster fixes</h2>
+          <p class="hint">These titles failed lookup. Paste a poster URL for any title you want to keep; the original pasted name will be used as the contender name.</p>
+        </div>
+        <button class="btn btn-ghost btn-small" id="skipManualBtn" type="button">Skip remaining</button>
+      </div>
+      <div id="manualFixList" class="manual-fix-list"></div>
+      <div class="manual-fix-actions">
+        <button class="btn btn-primary btn-small" id="addManualBtn" type="button">Add manual poster entries</button>
+      </div>
+    </section>
+
+    <div id="statusBar" class="status-bar" aria-live="polite">
+      <div class="spinner"></div>
+      <div style="width:100%">
+        <div id="statusText">Working…</div>
+        <div class="progress-wrap"><div id="progress" class="progress"></div></div>
+      </div>
+    </div>
+
+    <section id="contendersSection" class="contenders-section">
+      <div class="toolbar">
+        <h2>Selection</h2>
+        <div class="counter" id="counter">0 loaded</div>
+      </div>
+      <div id="grid" class="grid">
+        <div class="empty">Paste anime names and click “Lookup anime” to build your roulette grid.</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="big-spinner"></div>
+      <h3 id="overlayTitle">Loading</h3>
+      <p id="overlayText">Preparing your anime grid…</p>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toasts"></div>
+
+  <script>
+    const API_BASE = "https://api.jikan.moe/v4";
+    const FALLBACK_IMAGE = "";
+
+    const state = {
+      anime: [],
+      failedLookups: [],
+      running: false,
+      abortController: null,
+      audioContext: null,
+    };
+
+    const els = {
+      animeInput: document.getElementById("animeInput"),
+      delayInput: document.getElementById("delayInput"),
+      speedInput: document.getElementById("speedInput"),
+      batchInput: document.getElementById("batchInput"),
+      lookupBtn: document.getElementById("lookupBtn"),
+      beginBtn: document.getElementById("beginBtn"),
+      sampleBtn: document.getElementById("sampleBtn"),
+      manualFixes: document.getElementById("manualFixes"),
+      manualFixList: document.getElementById("manualFixList"),
+      addManualBtn: document.getElementById("addManualBtn"),
+      skipManualBtn: document.getElementById("skipManualBtn"),
+      grid: document.getElementById("grid"),
+      counter: document.getElementById("counter"),
+      statusBar: document.getElementById("statusBar"),
+      statusText: document.getElementById("statusText"),
+      progress: document.getElementById("progress"),
+      overlay: document.getElementById("overlay"),
+      overlayTitle: document.getElementById("overlayTitle"),
+      overlayText: document.getElementById("overlayText"),
+      toasts: document.getElementById("toasts"),
+    };
+
+    const sampleList = [
+      "Frieren: Beyond Journey's End",
+      "Bocchi the Rock!",
+      "Steins;Gate",
+      "Mob Psycho 100",
+      "Cowboy Bebop",
+      "Fullmetal Alchemist: Brotherhood",
+      "Vinland Saga",
+      "Odd Taxi",
+      "Attack on Titan",
+      "Demon Slayer",
+      "Cyberpunk: Edgerunners",
+      "Made in Abyss"
+    ];
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function randomUnit() {
+      const cryptoApi = window.crypto || window.msCrypto;
+      if (cryptoApi?.getRandomValues) {
+        const values = new Uint32Array(1);
+        cryptoApi.getRandomValues(values);
+        return values[0] / 0x100000000;
+      }
+      return Math.random();
+    }
+
+    function randomBetween(min, max) {
+      return min + randomUnit() * (max - min);
+    }
+
+    function randomInt(maxExclusive) {
+      return Math.floor(randomUnit() * Math.max(1, maxExclusive));
+    }
+
+    function getSpinSpeedLevel() {
+      return Math.max(1, Math.min(10, Math.round(Number(els.speedInput?.value) || 7)));
+    }
+
+    function getSpinSpeedFactor(speedLevel) {
+      // Wider range than before: low values produce far fewer highlight hops,
+      // while high values pack many more hops into the same user-selected round
+      // duration. The curve is intentionally non-linear so levels 8-10 feel
+      // noticeably faster than the middle settings.
+      const level = Math.max(1, Math.min(10, Number(speedLevel) || 7));
+      const normalized = (level - 1) / 9;
+      return 0.42 + Math.pow(normalized, 1.16) * 3.72;
+    }
+
+    function parseNames(raw) {
+      return [...new Set(raw
+        .split(/[\n,]+/)
+        .map(name => name.trim())
+        .filter(Boolean))];
+    }
+
+    function setBusy(isBusy, text = "Working…", percent = 0) {
+      els.statusBar.classList.toggle("show", isBusy);
+      els.statusText.textContent = text;
+      els.progress.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+      els.lookupBtn.disabled = isBusy || state.running;
+      els.sampleBtn.disabled = isBusy || state.running;
+      if (els.speedInput) els.speedInput.disabled = isBusy || state.running;
+      els.beginBtn.disabled = isBusy || state.running || state.anime.length < 2;
+      if (els.delayInput) els.delayInput.disabled = state.running;
+      if (els.speedInput) els.speedInput.disabled = state.running;
+      if (els.batchInput) els.batchInput.disabled = isBusy || state.running;
+    }
+
+    function showOverlay(show, title = "Loading", text = "Working…") {
+      els.overlay.classList.toggle("show", show);
+      els.overlayTitle.textContent = title;
+      els.overlayText.textContent = text;
+    }
+
+    function toast(message, tone = "default") {
+      const node = document.createElement("div");
+      node.className = "toast";
+      node.textContent = message;
+      if (tone === "error") node.style.borderColor = "rgba(251,113,133,0.55)";
+      if (tone === "success") node.style.borderColor = "rgba(52,211,153,0.55)";
+      els.toasts.appendChild(node);
+      setTimeout(() => {
+        node.style.opacity = "0";
+        node.style.transform = "translateY(8px)";
+        setTimeout(() => node.remove(), 220);
+      }, 4200);
+    }
+
+    function makeUid(prefix = "anime") {
+      const random = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      return `${prefix}-${random}`;
+    }
+
+    function normaliseAnime(query, result) {
+      const title = result?.title_english || result?.title || result?.title_japanese || query;
+      const originalTitle = result?.title && result.title !== title ? result.title : query;
+      return {
+        id: makeUid("anime"),
+        malId: result?.mal_id || null,
+        query,
+        title,
+        originalTitle,
+        image: result?.images?.webp?.large_image_url || result?.images?.jpg?.large_image_url || result?.images?.webp?.image_url || result?.images?.jpg?.image_url || FALLBACK_IMAGE,
+        year: result?.year || result?.aired?.prop?.from?.year || "—",
+        type: result?.type || "Anime",
+        score: result?.score || null,
+        url: result?.url || "",
+        manual: false,
+      };
+    }
+
+    function makeManualAnime(name, posterUrl) {
+      const cleanName = String(name || "Untitled anime").trim() || "Untitled anime";
+      return {
+        id: makeUid("manual"),
+        malId: null,
+        query: cleanName,
+        title: cleanName,
+        originalTitle: cleanName,
+        image: String(posterUrl || "").trim(),
+        year: "—",
+        type: "Manual",
+        score: null,
+        url: "",
+        manual: true,
+      };
+    }
+
+    async function lookupOneAnime(name, signal) {
+      const url = `${API_BASE}/anime?q=${encodeURIComponent(name)}&limit=1&sfw=true`;
+      const response = await fetch(url, { signal });
+
+      if (response.status === 429) {
+        throw new Error("Rate limited by API. Try a smaller batch size or wait a moment.");
+      }
+      if (!response.ok) {
+        throw new Error(`Lookup failed for ${name} (${response.status})`);
+      }
+
+      const payload = await response.json();
+      const result = payload?.data?.[0];
+      if (!result) {
+        throw new Error(`No match found for ${name}`);
+      }
+      return normaliseAnime(name, result);
+    }
+
+    async function lookupAnimeBatch(names) {
+      state.abortController?.abort();
+      state.abortController = new AbortController();
+      const signal = state.abortController.signal;
+      state.failedLookups = [];
+      renderManualFixes([]);
+
+      const batchSize = Math.max(1, Math.min(3, Number(els.batchInput.value) || 2));
+      const results = [];
+      const failed = [];
+      const total = names.length;
+
+      setBusy(true, `Starting lookup for ${total} anime…`, 1);
+      showOverlay(true, "Looking up anime", "Fetching English titles and posters…");
+
+      for (let i = 0; i < names.length; i += batchSize) {
+        const batch = names.slice(i, i + batchSize);
+        const currentBatch = Math.floor(i / batchSize) + 1;
+        const batchCount = Math.ceil(names.length / batchSize);
+
+        setBusy(true, `Batch ${currentBatch}/${batchCount}: ${batch.join(", ")}`, (i / total) * 100);
+        showOverlay(true, "Looking up anime", `${results.length}/${total} loaded. Please keep this tab open.`);
+
+        const settled = await Promise.allSettled(batch.map(name => lookupOneAnime(name, signal)));
+        settled.forEach((item, index) => {
+          if (item.status === "fulfilled") {
+            results.push(item.value);
+          } else {
+            failed.push({ name: batch[index], reason: item.reason?.message || "Unknown error" });
+          }
+        });
+
+        renderGrid(results);
+        setBusy(true, `${results.length}/${total} loaded`, (Math.min(i + batchSize, total) / total) * 100);
+
+        // Jikan's public API is rate-limited, so leave breathing room between batches.
+        if (i + batchSize < names.length) await sleep(1250);
+      }
+
+      state.anime = results;
+      state.failedLookups = failed;
+      renderGrid(state.anime);
+      renderManualFixes(failed);
+      showOverlay(false);
+      setBusy(false, "Done", 100);
+
+      if (results.length) {
+        toast(`Loaded ${results.length} anime${failed.length ? `, ${failed.length} need manual posters` : ""}.`, failed.length ? "default" : "success");
+      }
+      if (failed.length) {
+        console.warn("Failed lookups", failed);
+        toast(`Paste poster URLs for ${failed.length} failed lookup${failed.length === 1 ? "" : "s"} to keep them in the roulette.`);
+        els.manualFixes?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      if (!results.length && !failed.length) toast("No anime could be loaded. Check the names and try again.", "error");
+    }
+
+    function isAcceptablePosterUrl(value) {
+      const url = String(value || "").trim();
+      if (!url) return false;
+      if (url.startsWith("data:image/")) return true;
+      try {
+        const parsed = new URL(url);
+        return parsed.protocol === "http:" || parsed.protocol === "https:";
+      } catch {
+        return false;
+      }
+    }
+
+    function renderManualFixes(failures = state.failedLookups) {
+      state.failedLookups = Array.isArray(failures) ? failures : [];
+      if (!els.manualFixes || !els.manualFixList) return;
+
+      els.manualFixes.hidden = state.failedLookups.length === 0;
+      els.manualFixList.innerHTML = "";
+
+      if (!state.failedLookups.length) return;
+
+      const fragment = document.createDocumentFragment();
+      state.failedLookups.forEach((failure, index) => {
+        const row = document.createElement("div");
+        row.className = "manual-fix-row";
+        row.dataset.index = String(index);
+        row.innerHTML = `
+          <div>
+            <div class="manual-fix-title">${escapeHtml(failure.name)}</div>
+            <div class="manual-fix-reason">${escapeHtml(failure.reason || "Lookup failed")}</div>
+          </div>
+          <input type="url" inputmode="url" placeholder="https://example.com/poster.jpg" aria-label="Poster URL for ${escapeHtml(failure.name)}" />`;
+        fragment.appendChild(row);
+      });
+      els.manualFixList.appendChild(fragment);
+    }
+
+    function addManualPosterEntries() {
+      if (!state.failedLookups.length) return;
+
+      const rows = [...els.manualFixList.querySelectorAll(".manual-fix-row")];
+      const added = [];
+      const remaining = [];
+      const invalid = [];
+
+      rows.forEach(row => {
+        const index = Number(row.dataset.index);
+        const failure = state.failedLookups[index];
+        if (!failure) return;
+
+        const input = row.querySelector("input");
+        const posterUrl = input?.value.trim() || "";
+
+        if (!posterUrl) {
+          remaining.push(failure);
+          return;
+        }
+
+        if (!isAcceptablePosterUrl(posterUrl)) {
+          invalid.push(failure.name);
+          remaining.push({ ...failure, reason: "Invalid poster URL. Use an http, https, or data:image URL." });
+          return;
+        }
+
+        added.push(makeManualAnime(failure.name, posterUrl));
+      });
+
+      if (added.length) {
+        state.anime = [...state.anime, ...added];
+        renderGrid(state.anime);
+        toast(`Added ${added.length} manual entr${added.length === 1 ? "y" : "ies"}.`, "success");
+      }
+
+      if (invalid.length) {
+        toast(`${invalid.length} poster URL${invalid.length === 1 ? " was" : "s were"} invalid.`, "error");
+      }
+
+      renderManualFixes(remaining);
+      if (!remaining.length && added.length) {
+        document.getElementById("contendersSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function skipManualPosterEntries() {
+      const skipped = state.failedLookups.length;
+      renderManualFixes([]);
+      if (skipped) toast(`Skipped ${skipped} failed lookup${skipped === 1 ? "" : "s"}.`);
+    }
+
+    function renderGrid(items, winnerId = null) {
+      els.grid.innerHTML = "";
+      els.counter.textContent = `${items.length} loaded`;
+      els.beginBtn.disabled = state.running || items.length < 2;
+
+      if (!items.length) {
+        els.grid.innerHTML = `<div class="empty">No contenders yet. Paste names and run a lookup.</div>`;
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      items.forEach((anime, index) => {
+        const card = document.createElement("article");
+        card.className = `anime-card${winnerId === anime.id ? " winner" : ""}`;
+        card.dataset.id = anime.id;
+        card.innerHTML = `
+          <span class="badge">#${index + 1}</span>
+          ${anime.image ? `<img class="poster" src="${escapeHtml(anime.image)}" alt="${escapeHtml(anime.title)} poster" loading="lazy" />` : `<div class="placeholder">No poster found</div>`}
+          <div class="anime-info">
+            <h3 class="anime-title">${escapeHtml(anime.title)}</h3>
+            <p class="anime-meta">${escapeHtml(anime.type)} · ${escapeHtml(String(anime.year))}${anime.score ? ` · ★ ${escapeHtml(String(anime.score))}` : ""}</p>
+          </div>`;
+        fragment.appendChild(card);
+      });
+      els.grid.appendChild(fragment);
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#039;",
+        '"': "&quot;"
+      }[char]));
+    }
+
+    function shuffleArray(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = randomInt(i + 1);
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function ensureAudioReady() {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return null;
+      if (!state.audioContext) state.audioContext = new AudioContextClass();
+      if (state.audioContext.state === "suspended") state.audioContext.resume();
+      return state.audioContext;
+    }
+
+    function speak(text, { rate = 0.95, pitch = 1, volume = 1 } = {}) {
+      return new Promise(resolve => {
+        if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
+          resolve();
+          return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = rate;
+        utterance.pitch = pitch;
+        utterance.volume = volume;
+
+        let finished = false;
+        const finish = () => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(fallbackTimer);
+          resolve();
+        };
+
+        utterance.onend = finish;
+        utterance.onerror = finish;
+
+        // Some browsers occasionally miss onend, so this prevents the roulette from getting stuck.
+        const fallbackTimer = setTimeout(finish, Math.max(2600, text.length * 115));
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      });
+    }
+
+
+
+    function playTick(intensity = 0.55) {
+      const ctx = ensureAudioReady();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+      oscillator.type = "square";
+      oscillator.frequency.setValueAtTime(760 + intensity * 220, now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.055 * intensity, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.075);
+      oscillator.connect(gain).connect(ctx.destination);
+      oscillator.start(now);
+      oscillator.stop(now + 0.08);
+    }
+
+    function clearSelectionHighlights() {
+      els.grid.querySelectorAll(".anime-card.selecting").forEach(card => card.classList.remove("selecting"));
+    }
+
+    async function runSelectionSpotlight(pool, targetId, step, rounds, seconds, speedLevel = 7, label = "Next removal") {
+      if (!pool.length) return targetId;
+
+      const delayMs = Math.max(0, Math.min(60000, seconds * 1000));
+      const speedFactor = getSpinSpeedFactor(speedLevel);
+      const speedNormalized = (Math.max(1, Math.min(10, Number(speedLevel) || 7)) - 1) / 9;
+      const targetIndex = pool.findIndex(item => String(item.id) === String(targetId));
+      const safeTargetIndex = targetIndex >= 0 ? targetIndex : 0;
+      const target = pool[safeTargetIndex];
+      const totalRounds = Math.max(1, rounds);
+
+      const highlight = (anime, progress, remainingSeconds, tickSound = true) => {
+        const card = els.grid.querySelector(`[data-id="${CSS.escape(String(anime.id))}"]`);
+        const currentCard = els.grid.querySelector(".anime-card.selecting");
+
+        if (currentCard !== card) {
+          clearSelectionHighlights();
+        }
+        if (card) {
+          card.classList.add("selecting");
+        }
+
+        const clampedProgress = Math.max(0, Math.min(1, progress));
+        const statusPrefix = remainingSeconds > 0
+          ? `${label} in ${remainingSeconds.toFixed(1)}s`
+          : label;
+        setBusy(true, `${statusPrefix}… ${anime.title}`, ((step + clampedProgress * 0.72) / totalRounds) * 100);
+        if (tickSound) playTick(0.35 + clampedProgress * 0.65);
+      };
+
+      if (!delayMs || pool.length === 1) {
+        highlight(target, 1, 0);
+        await sleep(260);
+        return target.id;
+      }
+
+      // Build a deterministic, forward-only path that still lands exactly on the
+      // chosen target. The speed level now has a much wider effect on the number
+      // of highlights, while a separate slow-tail budget guarantees the final
+      // few hops visibly coast down instead of racing into the countdown end.
+      const spinProfile = {
+        finalHoldRatio: delayMs >= 1200
+          ? Math.max(0.08, randomBetween(0.12, 0.20) - speedNormalized * randomBetween(0.015, 0.04))
+          : Math.max(0.06, randomBetween(0.08, 0.14) - speedNormalized * 0.018),
+        ticksPerSecond: randomBetween(3.4, 5.0) + Math.pow(speedNormalized, 0.88) * randomBetween(12.0, 17.5),
+        tickJitter: randomBetween(0.86, 1.18),
+        headEasePower: randomBetween(1.35, 2.05),
+        headSlowWeight: randomBetween(0.85, 1.55),
+        tailCountBase: randomBetween(4.8, 7.4),
+        tailShare: randomBetween(0.42, 0.58) - speedNormalized * randomBetween(0.035, 0.07),
+        tailPower: randomBetween(2.65, 4.05),
+        tailStrength: randomBetween(7.5, 12.5) - speedNormalized * randomBetween(0.8, 2.0),
+        wobble: randomBetween(0.05, 0.15),
+      };
+
+      const finalHoldMs = delayMs >= 1200
+        ? Math.min(820, Math.max(180, delayMs * spinProfile.finalHoldRatio))
+        : Math.min(190, Math.max(55, delayMs * spinProfile.finalHoldRatio));
+      const spinMs = Math.max(0, delayMs - finalHoldMs);
+
+      const rawTicks = Math.round((spinMs / 1000) * spinProfile.ticksPerSecond * spinProfile.tickJitter) + 1;
+      const poolMoodTicks = Math.min(
+        14 + Math.round(speedNormalized * 10),
+        Math.ceil(pool.length * randomBetween(0.18, 0.36) * (0.8 + speedNormalized * 0.55))
+      );
+      const minimumTicks = Math.max(3, Math.min(pool.length <= 2 ? 7 : 9, Math.ceil(pool.length * 0.28)));
+      const maximumTicks = Math.round(20 + speedFactor * 22);
+      const tickCountJitter = randomInt(7) - 3;
+      const desiredTicks = Math.max(minimumTicks, rawTicks, poolMoodTicks) + tickCountJitter;
+      const totalTicks = Math.max(
+        minimumTicks,
+        Math.min(190, maximumTicks, desiredTicks)
+      );
+
+      const stepsBeforeTarget = totalTicks - 1;
+      const startIndex = (safeTargetIndex - (stepsBeforeTarget % pool.length) + pool.length) % pool.length;
+      const sequence = Array.from({ length: totalTicks }, (_, index) => pool[(startIndex + index) % pool.length]);
+      const preTargetSequence = sequence.slice(0, -1);
+
+      const preTargetLength = preTargetSequence.length;
+      const tailCount = Math.min(
+        preTargetLength,
+        Math.max(2, Math.round(spinProfile.tailCountBase - speedNormalized * randomBetween(0.8, 1.7)))
+      );
+      const headCount = Math.max(0, preTargetLength - tailCount);
+      const tailShare = preTargetLength >= 4
+        ? Math.max(0.34, Math.min(0.62, spinProfile.tailShare))
+        : 0;
+      const tailMs = spinMs * tailShare;
+      const headMs = Math.max(0, spinMs - tailMs);
+
+      const normaliseDelays = (weights, duration) => {
+        if (!weights.length || !duration) return weights.map(() => 0);
+        const totalWeight = weights.reduce((sum, weight) => sum + weight, 0) || 1;
+        return weights.map(weight => (weight / totalWeight) * duration);
+      };
+
+      const headWeights = Array.from({ length: headCount }, (_, index) => {
+        const progress = headCount <= 1 ? 1 : index / (headCount - 1);
+        const baseWeight = 0.72 + Math.pow(progress, spinProfile.headEasePower) * spinProfile.headSlowWeight;
+        const wobble = 1 + (randomUnit() - 0.5) * 2 * spinProfile.wobble;
+        return Math.max(0.28, baseWeight * wobble);
+      });
+
+      const tailWeights = Array.from({ length: tailCount }, (_, index) => {
+        const progress = tailCount <= 1 ? 1 : (index + 1) / tailCount;
+        const baseWeight = 1 + Math.pow(progress, spinProfile.tailPower) * Math.max(5.0, spinProfile.tailStrength);
+        const wobble = 1 + (randomUnit() - 0.5) * 2 * spinProfile.wobble * 0.55;
+        return Math.max(0.85, baseWeight * wobble);
+      });
+
+      let tickDelays = [
+        ...normaliseDelays(headWeights, headMs),
+        ...normaliseDelays(tailWeights, tailMs)
+      ];
+
+      // Keep extremely fast opening ticks renderable, but do not steal time from
+      // the slow tail. This preserves the dramatic ending even at speed 10.
+      const minHeadDelay = speedNormalized > 0.78 ? 12 : speedNormalized > 0.45 ? 16 : 22;
+      if (headCount > 1) {
+        const headDelays = tickDelays.slice(0, headCount);
+        const deficit = headDelays.reduce((sum, delay) => sum + Math.max(0, minHeadDelay - delay), 0);
+        if (deficit > 0 && deficit < headMs * 0.18) {
+          const adjustedHead = headDelays.map(delay => Math.max(minHeadDelay, delay));
+          const overflow = adjustedHead.reduce((sum, delay) => sum + delay, 0) - headMs;
+          if (overflow > 0) {
+            const adjustable = adjustedHead
+              .map((delay, index) => ({ index, extra: Math.max(0, delay - minHeadDelay) }))
+              .filter(item => item.extra > 0);
+            const adjustableTotal = adjustable.reduce((sum, item) => sum + item.extra, 0) || 1;
+            adjustable.forEach(item => {
+              adjustedHead[item.index] -= overflow * (item.extra / adjustableTotal);
+            });
+          }
+          tickDelays = [...adjustedHead, ...tickDelays.slice(headCount)];
+        }
+      }
+
+      const startedAt = performance.now();
+      for (let tick = 0; tick < preTargetSequence.length && state.running; tick++) {
+        const elapsed = Math.max(0, performance.now() - startedAt);
+        const progress = Math.min(1, elapsed / delayMs);
+        const remaining = Math.max(0, (delayMs - elapsed) / 1000);
+        highlight(preTargetSequence[tick], progress, remaining);
+        await sleep(tickDelays[tick]);
+      }
+
+      if (!state.running) return target.id;
+
+      // Land on the exact target and linger there inside the configured window.
+      const landingElapsed = Math.max(0, performance.now() - startedAt);
+      const landingProgress = Math.min(1, landingElapsed / delayMs);
+      const landingRemaining = Math.max(0, (delayMs - landingElapsed) / 1000);
+      highlight(target, landingProgress, landingRemaining);
+
+      while (state.running) {
+        const elapsed = Math.max(0, performance.now() - startedAt);
+        const remainingWindow = Math.max(0, delayMs - elapsed);
+        if (!remainingWindow) break;
+        highlight(target, Math.min(1, elapsed / delayMs), remainingWindow / 1000, false);
+        await sleep(Math.min(140, remainingWindow));
+      }
+
+      highlight(target, 1, 0, false);
+      return target.id;
+    }
+
+    function playVictorySound() {
+      const ctx = ensureAudioReady();
+      if (!ctx) return;
+
+      const now = ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((frequency, index) => {
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+        oscillator.type = index === notes.length - 1 ? "triangle" : "sine";
+        oscillator.frequency.setValueAtTime(frequency, now + index * 0.13);
+        gain.gain.setValueAtTime(0.0001, now + index * 0.13);
+        gain.gain.exponentialRampToValueAtTime(0.18, now + index * 0.13 + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.13 + 0.34);
+        oscillator.connect(gain).connect(ctx.destination);
+        oscillator.start(now + index * 0.13);
+        oscillator.stop(now + index * 0.13 + 0.36);
+      });
+    }
+
+    async function beginRoulette() {
+      if (state.running || state.anime.length < 2) return;
+
+      ensureAudioReady();
+      state.running = true;
+      document.body.classList.add("roulette-mode");
+      renderManualFixes([]);
+      els.lookupBtn.disabled = true;
+      els.sampleBtn.disabled = true;
+      els.beginBtn.disabled = true;
+
+      const delaySeconds = Math.max(0, Math.min(60, Number(els.delayInput.value) || 0));
+      const speedLevel = getSpinSpeedLevel();
+      let pool = shuffleArray(state.anime);
+      const rounds = pool.length - 1;
+      let step = 0;
+
+      renderGrid(pool);
+      toast("Roulette started. Sound on.");
+      setBusy(true, `Roulette running: ${pool.length} contenders`, 0);
+      document.getElementById("contendersSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      while (pool.length > 2 && state.running) {
+        const target = pool[randomInt(pool.length)];
+        const selectedId = await runSelectionSpotlight(pool, target.id, step, rounds, delaySeconds, speedLevel, "Next removal");
+        const removeIndex = pool.findIndex(item => String(item.id) === String(selectedId));
+        if (removeIndex < 0) break;
+        const removed = pool[removeIndex];
+
+        const card = els.grid.querySelector(`[data-id="${CSS.escape(String(removed.id))}"]`);
+        setBusy(true, `Removing ${removed.title}…`, ((step + 0.76) / rounds) * 100);
+
+        if (card) {
+          card.classList.remove("selecting");
+          card.classList.add("removing");
+          await sleep(760);
+        }
+        clearSelectionHighlights();
+
+        // Remove and reshuffle before announcing, so the next selection can start
+        // immediately after the voice finishes reading the removed anime name.
+        pool.splice(removeIndex, 1);
+        pool = shuffleArray(pool);
+        renderGrid(pool);
+        setBusy(true, `Removed ${removed.title}. Announcing…`, ((step + 0.88) / rounds) * 100);
+
+        await speak(`Removed. ${removed.title}.`, { rate: 0.96, pitch: 0.98 });
+
+        step += 1;
+        setBusy(
+          true,
+          pool.length > 2 ? "Announcement complete. Starting next spin…" : "Final round: removing one last contender…",
+          (step / rounds) * 100
+        );
+      }
+
+      if (state.running && pool.length === 2) {
+        const finalRemovalTarget = pool[randomInt(pool.length)];
+        const selectedId = await runSelectionSpotlight(pool, finalRemovalTarget.id, step, rounds, delaySeconds, speedLevel, "Final removal");
+        const removeIndex = pool.findIndex(item => String(item.id) === String(selectedId));
+        const removedFinal = removeIndex >= 0 ? pool[removeIndex] : finalRemovalTarget;
+        const selectedLoserId = String(removedFinal.id);
+        const winner = pool.find(item => String(item.id) !== selectedLoserId) || pool[0];
+
+        state.anime = winner ? [winner] : [];
+        pool = state.anime;
+        clearSelectionHighlights();
+        renderGrid(pool, winner?.id);
+        setBusy(true, winner ? `Final removal: ${removedFinal.title}. Winner selected.` : "Winner selected", 100);
+
+        if (winner) {
+          playVictorySound();
+          toast(`Winner: ${winner.title}`, "success");
+          document.querySelector(".winner")?.scrollIntoView({ behavior: "smooth", block: "center" });
+          await speak(`Winner is. ${winner.title}.`, { rate: 0.9, pitch: 1.05 });
+        }
+      } else if (state.running && pool.length === 1) {
+        state.anime = pool;
+        renderGrid(pool, pool[0]?.id);
+        setBusy(true, "Winner selected", 100);
+        if (pool[0]) {
+          playVictorySound();
+          toast(`Winner: ${pool[0].title}`, "success");
+          document.querySelector(".winner")?.scrollIntoView({ behavior: "smooth", block: "center" });
+          await speak(`Winner is. ${pool[0].title}.`, { rate: 0.9, pitch: 1.05 });
+        }
+      }
+
+      state.running = false;
+      setBusy(false, "Roulette complete", 100);
+      els.lookupBtn.disabled = false;
+      els.sampleBtn.disabled = false;
+      els.beginBtn.disabled = pool.length < 2;
+    }
+
+    els.lookupBtn.addEventListener("click", async () => {
+      const names = parseNames(els.animeInput.value);
+      if (names.length < 2) {
+        toast("Add at least two anime names first.", "error");
+        return;
+      }
+      try {
+        await lookupAnimeBatch(names);
+      } catch (error) {
+        showOverlay(false);
+        setBusy(false);
+        if (error.name !== "AbortError") toast(error.message || "Lookup failed.", "error");
+      }
+    });
+
+    els.beginBtn.addEventListener("click", beginRoulette);
+    els.addManualBtn.addEventListener("click", addManualPosterEntries);
+    els.skipManualBtn.addEventListener("click", skipManualPosterEntries);
+
+    els.sampleBtn.addEventListener("click", () => {
+      els.animeInput.value = sampleList.join("\n");
+      renderManualFixes([]);
+      toast("Sample list added.");
+    });
+
+    window.addEventListener("beforeunload", () => state.abortController?.abort());
+  </script>
+</body>
+</html>
