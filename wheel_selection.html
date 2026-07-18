@@ -51,7 +51,7 @@
       mask-image: radial-gradient(circle at center, black, transparent 78%);
     }
 
-    button, input, textarea { font: inherit; }
+    button, input, textarea, select { font: inherit; }
 
     .shell {
       width: min(1180px, calc(100% - 32px));
@@ -178,7 +178,7 @@
       letter-spacing: 0.01em;
     }
 
-    textarea, input[type="number"], input[type="url"], input[type="text"] {
+    textarea, input[type="number"], input[type="url"], input[type="text"], select {
       width: 100%;
       color: var(--text);
       background: rgba(0,0,0,0.23);
@@ -195,9 +195,24 @@
       line-height: 1.45;
     }
 
-    input[type="number"], input[type="url"], input[type="text"] { padding: 13px 14px; }
+    input[type="number"], input[type="url"], input[type="text"], select { padding: 13px 14px; }
 
-    textarea:focus, input[type="number"]:focus, input[type="url"]:focus, input[type="text"]:focus {
+    select {
+      appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+        linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+      background-position:
+        calc(100% - 18px) calc(50% - 2px),
+        calc(100% - 13px) calc(50% - 2px);
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+      padding-right: 38px;
+    }
+
+    select option { color: #11131a; }
+
+    textarea:focus, input[type="number"]:focus, input[type="url"]:focus, input[type="text"]:focus, select:focus {
       border-color: rgba(167, 139, 250, 0.8);
       box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.13);
       background: rgba(0,0,0,0.32);
@@ -209,9 +224,7 @@
       gap: 12px;
     }
 
-    .settings-row {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
+    .settings-row { grid-template-columns: 1fr 1fr; }
 
     .actions {
       display: grid;
@@ -333,6 +346,17 @@
 
     .status-bar.show { display: flex; }
 
+    .status-bar.paused .spinner { display: none; }
+
+    .status-main { width: 100%; }
+
+    .round-action {
+      flex: 0 0 auto;
+      min-width: 170px;
+    }
+
+    .round-action[hidden] { display: none; }
+
     .spinner {
       width: 18px;
       height: 18px;
@@ -439,6 +463,27 @@
       font-size: 0.78rem;
       line-height: 1.35;
     }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .edit-match-btn {
+      width: 100%;
+      min-height: 36px;
+      padding: 0 11px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.055);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .edit-match-btn:hover { background: rgba(255,255,255,0.1); }
 
     .badge {
       position: absolute;
@@ -610,6 +655,107 @@
 
     .modal p { color: var(--muted); line-height: 1.6; margin: 0; }
 
+    .match-editor {
+      width: min(920px, 100%);
+      max-height: min(880px, calc(100vh - 32px));
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .match-editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .match-editor-header h3 { margin-top: 0; }
+
+    .icon-btn {
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      color: white;
+      cursor: pointer;
+      font-size: 1.35rem;
+    }
+
+    .match-search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .match-status {
+      min-height: 24px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-bottom: 10px;
+    }
+
+    .match-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .match-result {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 12px;
+      min-height: 110px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(0,0,0,0.18);
+    }
+
+    .match-result img,
+    .match-result-placeholder {
+      width: 72px;
+      height: 100px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .match-result-placeholder { display: grid; place-items: center; color: var(--faint); }
+
+    .match-result-title {
+      margin: 1px 0 5px;
+      font-weight: 850;
+      line-height: 1.2;
+    }
+
+    .match-result-meta { color: var(--faint); font-size: 0.78rem; line-height: 1.35; }
+
+    .match-result .btn { width: 100%; min-height: 34px; margin-top: 9px; border-radius: 11px; font-size: 0.78rem; }
+
+    .manual-edit {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .manual-edit summary {
+      cursor: pointer;
+      color: rgba(255,255,255,0.82);
+      font-weight: 800;
+    }
+
+    .manual-edit-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+      margin-top: 13px;
+    }
+
     .big-spinner {
       width: 56px;
       height: 56px;
@@ -635,6 +781,8 @@
     body.roulette-mode .manual-fixes {
       display: none !important;
     }
+
+    body.roulette-mode .card-actions { display: none; }
 
     body.roulette-mode .shell {
       width: min(1500px, calc(100% - 32px));
@@ -695,6 +843,9 @@
       .manual-fix-row { grid-template-columns: 1fr; }
       .manual-fix-actions { justify-content: stretch; }
       .manual-fix-actions .btn { flex: 1 1 180px; }
+      .status-bar { align-items: stretch; flex-wrap: wrap; }
+      .round-action { width: 100%; }
+      .match-search-row, .manual-edit-fields { grid-template-columns: 1fr; }
       .anime-card.winner { grid-column: auto; }
     }
   </style>
@@ -703,7 +854,7 @@
   <div class="shell">
     <header>
       <div class="brand"><div class="logo">AR</div><span>Anime Roulette</span></div>
-      <div class="pill">Jikan v4 lookup · English titles · poster grid · timed elimination</div>
+      <div class="pill">Jikan + Kitsu lookup · editable matches · automatic or manual rounds</div>
     </header>
 
     <section class="hero">
@@ -740,6 +891,13 @@
             <label for="batchInput">Requests per batch</label>
             <input id="batchInput" type="number" min="1" max="3" value="2" />
           </div>
+          <div class="field">
+            <label for="modeInput">Round progression</label>
+            <select id="modeInput">
+              <option value="automatic">Automatic rounds</option>
+              <option value="manual">Step-by-step</option>
+            </select>
+          </div>
         </div>
 
         <div class="actions">
@@ -768,10 +926,11 @@
 
     <div id="statusBar" class="status-bar" aria-live="polite">
       <div class="spinner"></div>
-      <div style="width:100%">
+      <div class="status-main">
         <div id="statusText">Working…</div>
         <div class="progress-wrap"><div id="progress" class="progress"></div></div>
       </div>
+      <button class="btn btn-primary btn-small round-action" id="nextRoundBtn" type="button" hidden>Spin next round</button>
     </div>
 
     <section id="contendersSection" class="contenders-section">
@@ -793,10 +952,45 @@
     </div>
   </div>
 
+  <div class="overlay" id="matchOverlay" role="dialog" aria-modal="true" aria-labelledby="matchEditorTitle">
+    <div class="modal match-editor">
+      <div class="match-editor-header">
+        <div>
+          <h3 id="matchEditorTitle">Correct this match</h3>
+          <p>Search Jikan and Kitsu, then choose the intended anime.</p>
+        </div>
+        <button class="icon-btn" id="closeMatchBtn" type="button" aria-label="Close match editor">×</button>
+      </div>
+
+      <div class="match-search-row">
+        <input id="matchSearchInput" type="text" autocomplete="off" placeholder="Search for the correct anime title" />
+        <button class="btn btn-primary btn-small" id="matchSearchBtn" type="button">Search both APIs</button>
+      </div>
+      <div class="match-status" id="matchStatus" aria-live="polite"></div>
+      <div class="match-results" id="matchResults"></div>
+
+      <details class="manual-edit">
+        <summary>Or enter a title and poster manually</summary>
+        <div class="manual-edit-fields">
+          <div class="field">
+            <label for="manualTitleInput">Display title</label>
+            <input id="manualTitleInput" type="text" />
+          </div>
+          <div class="field">
+            <label for="manualImageInput">Poster URL</label>
+            <input id="manualImageInput" type="url" inputmode="url" placeholder="https://example.com/poster.jpg" />
+          </div>
+          <button class="btn btn-ghost btn-small" id="saveManualMatchBtn" type="button">Save manual edit</button>
+        </div>
+      </details>
+    </div>
+  </div>
+
   <div class="toast-stack" id="toasts"></div>
 
   <script>
     const API_BASE = "https://api.jikan.moe/v4";
+    const KITSU_API_BASE = "https://kitsu.io/api/edge";
     const FALLBACK_IMAGE = "";
 
     const state = {
@@ -804,7 +998,11 @@
       failedLookups: [],
       running: false,
       abortController: null,
+      matchAbortController: null,
       audioContext: null,
+      editingAnimeId: null,
+      matchCandidates: [],
+      manualAdvanceResolver: null,
     };
 
     const els = {
@@ -812,6 +1010,7 @@
       delayInput: document.getElementById("delayInput"),
       speedInput: document.getElementById("speedInput"),
       batchInput: document.getElementById("batchInput"),
+      modeInput: document.getElementById("modeInput"),
       lookupBtn: document.getElementById("lookupBtn"),
       beginBtn: document.getElementById("beginBtn"),
       sampleBtn: document.getElementById("sampleBtn"),
@@ -824,9 +1023,19 @@
       statusBar: document.getElementById("statusBar"),
       statusText: document.getElementById("statusText"),
       progress: document.getElementById("progress"),
+      nextRoundBtn: document.getElementById("nextRoundBtn"),
       overlay: document.getElementById("overlay"),
       overlayTitle: document.getElementById("overlayTitle"),
       overlayText: document.getElementById("overlayText"),
+      matchOverlay: document.getElementById("matchOverlay"),
+      closeMatchBtn: document.getElementById("closeMatchBtn"),
+      matchSearchInput: document.getElementById("matchSearchInput"),
+      matchSearchBtn: document.getElementById("matchSearchBtn"),
+      matchStatus: document.getElementById("matchStatus"),
+      matchResults: document.getElementById("matchResults"),
+      manualTitleInput: document.getElementById("manualTitleInput"),
+      manualImageInput: document.getElementById("manualImageInput"),
+      saveManualMatchBtn: document.getElementById("saveManualMatchBtn"),
       toasts: document.getElementById("toasts"),
     };
 
@@ -888,6 +1097,31 @@
         .filter(Boolean))];
     }
 
+    async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+      const controller = new AbortController();
+      const parentSignal = options.signal;
+      let timedOut = false;
+      const abortFromParent = () => controller.abort();
+
+      if (parentSignal?.aborted) controller.abort();
+      else parentSignal?.addEventListener("abort", abortFromParent, { once: true });
+
+      const timer = setTimeout(() => {
+        timedOut = true;
+        controller.abort();
+      }, timeoutMs);
+
+      try {
+        return await fetch(url, { ...options, signal: controller.signal });
+      } catch (error) {
+        if (timedOut) throw new Error(`Request timed out after ${Math.round(timeoutMs / 1000)} seconds`);
+        throw error;
+      } finally {
+        clearTimeout(timer);
+        parentSignal?.removeEventListener("abort", abortFromParent);
+      }
+    }
+
     function setBusy(isBusy, text = "Working…", percent = 0) {
       els.statusBar.classList.toggle("show", isBusy);
       els.statusText.textContent = text;
@@ -897,8 +1131,8 @@
       if (els.speedInput) els.speedInput.disabled = isBusy || state.running;
       els.beginBtn.disabled = isBusy || state.running || state.anime.length < 2;
       if (els.delayInput) els.delayInput.disabled = state.running;
-      if (els.speedInput) els.speedInput.disabled = state.running;
       if (els.batchInput) els.batchInput.disabled = isBusy || state.running;
+      if (els.modeInput) els.modeInput.disabled = isBusy || state.running;
     }
 
     function showOverlay(show, title = "Loading", text = "Working…") {
@@ -926,12 +1160,13 @@
       return `${prefix}-${random}`;
     }
 
-    function normaliseAnime(query, result) {
+    function normaliseJikanAnime(query, result) {
       const title = result?.title_english || result?.title || result?.title_japanese || query;
       const originalTitle = result?.title && result.title !== title ? result.title : query;
       return {
         id: makeUid("anime"),
         malId: result?.mal_id || null,
+        kitsuId: null,
         query,
         title,
         originalTitle,
@@ -941,6 +1176,34 @@
         score: result?.score || null,
         url: result?.url || "",
         manual: false,
+        source: "Jikan",
+      };
+    }
+
+    function normaliseKitsuAnime(query, result) {
+      const attributes = result?.attributes || {};
+      const title = attributes?.titles?.en || attributes?.canonicalTitle || attributes?.titles?.en_jp || attributes?.titles?.ja_jp || query;
+      const originalTitle = attributes?.canonicalTitle && attributes.canonicalTitle !== title
+        ? attributes.canonicalTitle
+        : query;
+      const rating = Number(attributes?.averageRating);
+      const score = Number.isFinite(rating) ? Number((rating / 10).toFixed(1)) : null;
+      const startYear = /^\d{4}/.test(attributes?.startDate || "") ? attributes.startDate.slice(0, 4) : "—";
+
+      return {
+        id: makeUid("anime"),
+        malId: null,
+        kitsuId: result?.id || null,
+        query,
+        title,
+        originalTitle,
+        image: attributes?.posterImage?.large || attributes?.posterImage?.original || attributes?.posterImage?.medium || attributes?.posterImage?.small || FALLBACK_IMAGE,
+        year: startYear,
+        type: attributes?.subtype || attributes?.showType || "Anime",
+        score,
+        url: attributes?.slug ? `https://kitsu.io/anime/${encodeURIComponent(attributes.slug)}` : "",
+        manual: false,
+        source: "Kitsu",
       };
     }
 
@@ -949,6 +1212,7 @@
       return {
         id: makeUid("manual"),
         malId: null,
+        kitsuId: null,
         query: cleanName,
         title: cleanName,
         originalTitle: cleanName,
@@ -958,12 +1222,13 @@
         score: null,
         url: "",
         manual: true,
+        source: "Manual",
       };
     }
 
-    async function lookupOneAnime(name, signal) {
-      const url = `${API_BASE}/anime?q=${encodeURIComponent(name)}&limit=1&sfw=true`;
-      const response = await fetch(url, { signal });
+    async function searchJikanAnime(name, signal, limit = 1) {
+      const url = `${API_BASE}/anime?q=${encodeURIComponent(name)}&limit=${Math.max(1, Math.min(10, limit))}&sfw=true`;
+      const response = await fetchWithTimeout(url, { signal }, 6500);
 
       if (response.status === 429) {
         throw new Error("Rate limited by API. Try a smaller batch size or wait a moment.");
@@ -973,11 +1238,46 @@
       }
 
       const payload = await response.json();
-      const result = payload?.data?.[0];
-      if (!result) {
-        throw new Error(`No match found for ${name}`);
+      return (payload?.data || []).map(result => normaliseJikanAnime(name, result));
+    }
+
+    async function searchKitsuAnime(name, signal, limit = 1) {
+      const params = new URLSearchParams({
+        "filter[text]": name,
+        "page[limit]": String(Math.max(1, Math.min(10, limit))),
+      });
+      const response = await fetchWithTimeout(`${KITSU_API_BASE}/anime?${params}`, {
+        signal,
+        headers: { Accept: "application/vnd.api+json" },
+      }, 8000);
+
+      if (!response.ok) {
+        throw new Error(`Kitsu lookup failed for ${name} (${response.status})`);
       }
-      return normaliseAnime(name, result);
+
+      const payload = await response.json();
+      return (payload?.data || []).map(result => normaliseKitsuAnime(name, result));
+    }
+
+    async function lookupOneAnime(name, signal) {
+      let jikanError = null;
+      try {
+        const jikanMatches = await searchJikanAnime(name, signal, 1);
+        if (jikanMatches.length) return jikanMatches[0];
+        jikanError = new Error(`No Jikan match found for ${name}`);
+      } catch (error) {
+        if (error?.name === "AbortError") throw error;
+        jikanError = error;
+      }
+
+      try {
+        const kitsuMatches = await searchKitsuAnime(name, signal, 1);
+        if (kitsuMatches.length) return kitsuMatches[0];
+        throw new Error(`No Kitsu match found for ${name}`);
+      } catch (kitsuError) {
+        if (kitsuError?.name === "AbortError") throw kitsuError;
+        throw new Error(`${jikanError?.message || "Jikan lookup failed"}; ${kitsuError?.message || "Kitsu lookup failed"}`);
+      }
     }
 
     async function lookupAnimeBatch(names) {
@@ -1027,7 +1327,9 @@
       setBusy(false, "Done", 100);
 
       if (results.length) {
-        toast(`Loaded ${results.length} anime${failed.length ? `, ${failed.length} need manual posters` : ""}.`, failed.length ? "default" : "success");
+        const kitsuFallbacks = results.filter(anime => anime.source === "Kitsu").length;
+        const fallbackText = kitsuFallbacks ? ` (${kitsuFallbacks} via Kitsu backup)` : "";
+        toast(`Loaded ${results.length} anime${fallbackText}${failed.length ? `, ${failed.length} need manual posters` : ""}.`, failed.length ? "default" : "success");
       }
       if (failed.length) {
         console.warn("Failed lookups", failed);
@@ -1126,6 +1428,141 @@
       if (skipped) toast(`Skipped ${skipped} failed lookup${skipped === 1 ? "" : "s"}.`);
     }
 
+    function closeMatchEditor() {
+      state.matchAbortController?.abort();
+      state.matchAbortController = null;
+      state.editingAnimeId = null;
+      state.matchCandidates = [];
+      els.matchOverlay.classList.remove("show");
+      els.matchResults.innerHTML = "";
+      els.matchStatus.textContent = "";
+    }
+
+    function openMatchEditor(animeId) {
+      if (state.running) return;
+      const anime = state.anime.find(item => String(item.id) === String(animeId));
+      if (!anime) return;
+
+      state.editingAnimeId = anime.id;
+      els.matchSearchInput.value = anime.query || anime.title;
+      els.manualTitleInput.value = anime.title;
+      els.manualImageInput.value = anime.image || "";
+      els.matchSearchBtn.disabled = false;
+      els.matchResults.innerHTML = "";
+      els.matchStatus.textContent = `Current match: ${anime.title} (${anime.source || "Unknown source"})`;
+      els.matchOverlay.classList.add("show");
+      els.matchSearchInput.focus();
+    }
+
+    function renderMatchResults(items) {
+      els.matchResults.innerHTML = "";
+      if (!items.length) {
+        els.matchResults.innerHTML = `<div class="empty">No matches found. Try another title or use the manual fields below.</div>`;
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      items.forEach((anime, index) => {
+        const result = document.createElement("article");
+        result.className = "match-result";
+        result.innerHTML = `
+          ${anime.image
+            ? `<img src="${escapeHtml(anime.image)}" alt="${escapeHtml(anime.title)} poster" loading="lazy" />`
+            : `<div class="match-result-placeholder">No poster</div>`}
+          <div>
+            <div class="match-result-title">${escapeHtml(anime.title)}</div>
+            <div class="match-result-meta">${escapeHtml(anime.source)} · ${escapeHtml(anime.type)} · ${escapeHtml(String(anime.year))}${anime.score ? ` · ★ ${escapeHtml(String(anime.score))}` : ""}</div>
+            <button class="btn btn-ghost use-match-btn" type="button" data-match-index="${index}">Use this match</button>
+          </div>`;
+        fragment.appendChild(result);
+      });
+      els.matchResults.appendChild(fragment);
+    }
+
+    async function searchReplacementMatches() {
+      const query = els.matchSearchInput.value.trim();
+      if (!query) {
+        els.matchStatus.textContent = "Enter a title to search.";
+        return;
+      }
+
+      state.matchAbortController?.abort();
+      state.matchAbortController = new AbortController();
+      const signal = state.matchAbortController.signal;
+      els.matchSearchBtn.disabled = true;
+      els.matchStatus.textContent = "Searching Jikan and Kitsu…";
+      els.matchResults.innerHTML = "";
+
+      try {
+        const settled = await Promise.allSettled([
+          searchJikanAnime(query, signal, 6),
+          searchKitsuAnime(query, signal, 6),
+        ]);
+        if (signal.aborted) return;
+
+        const candidates = settled.flatMap(result => result.status === "fulfilled" ? result.value : []);
+        const seen = new Set();
+        state.matchCandidates = candidates.filter(candidate => {
+          const externalId = candidate.malId || candidate.kitsuId || `${candidate.title}-${candidate.year}`;
+          const key = `${candidate.source}-${externalId}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+
+        const failedSources = settled
+          .map((result, index) => result.status === "rejected" ? ["Jikan", "Kitsu"][index] : null)
+          .filter(Boolean);
+        els.matchStatus.textContent = state.matchCandidates.length
+          ? `${state.matchCandidates.length} matches found${failedSources.length ? `; ${failedSources.join(" and ")} unavailable` : ""}.`
+          : `No matches found${failedSources.length ? `; ${failedSources.join(" and ")} unavailable` : ""}.`;
+        renderMatchResults(state.matchCandidates);
+      } catch (error) {
+        if (error?.name !== "AbortError") {
+          els.matchStatus.textContent = error?.message || "Match search failed.";
+          renderMatchResults([]);
+        }
+      } finally {
+        if (!signal.aborted) els.matchSearchBtn.disabled = false;
+      }
+    }
+
+    function replaceEditedAnime(replacement) {
+      const index = state.anime.findIndex(item => String(item.id) === String(state.editingAnimeId));
+      if (index < 0) return;
+
+      const current = state.anime[index];
+      state.anime[index] = {
+        ...replacement,
+        id: current.id,
+        query: els.matchSearchInput.value.trim() || replacement.query || current.query,
+      };
+      const replacementTitle = state.anime[index].title;
+      renderGrid(state.anime);
+      closeMatchEditor();
+      toast(`Updated match to ${replacementTitle}.`, "success");
+    }
+
+    function saveManualMatch() {
+      const title = els.manualTitleInput.value.trim();
+      const posterUrl = els.manualImageInput.value.trim();
+      const current = state.anime.find(item => String(item.id) === String(state.editingAnimeId));
+      if (!title || !current) {
+        els.matchStatus.textContent = "Enter a display title for the manual edit.";
+        return;
+      }
+      if (posterUrl && !isAcceptablePosterUrl(posterUrl)) {
+        els.matchStatus.textContent = "Use an http, https, or data:image poster URL.";
+        return;
+      }
+
+      replaceEditedAnime({
+        ...makeManualAnime(title, posterUrl || current.image),
+        type: current.type || "Manual",
+        year: current.year || "—",
+      });
+    }
+
     function renderGrid(items, winnerId = null) {
       els.grid.innerHTML = "";
       els.counter.textContent = `${items.length} loaded`;
@@ -1146,7 +1583,10 @@
           ${anime.image ? `<img class="poster" src="${escapeHtml(anime.image)}" alt="${escapeHtml(anime.title)} poster" loading="lazy" />` : `<div class="placeholder">No poster found</div>`}
           <div class="anime-info">
             <h3 class="anime-title">${escapeHtml(anime.title)}</h3>
-            <p class="anime-meta">${escapeHtml(anime.type)} · ${escapeHtml(String(anime.year))}${anime.score ? ` · ★ ${escapeHtml(String(anime.score))}` : ""}</p>
+            <p class="anime-meta">${escapeHtml(anime.source || "Unknown")} · ${escapeHtml(anime.type)} · ${escapeHtml(String(anime.year))}${anime.score ? ` · ★ ${escapeHtml(String(anime.score))}` : ""}</p>
+            <div class="card-actions">
+              <button class="edit-match-btn" type="button" data-edit-id="${escapeHtml(anime.id)}">Edit match</button>
+            </div>
           </div>`;
         fragment.appendChild(card);
       });
@@ -1419,6 +1859,28 @@
       });
     }
 
+    function hideRoundAction() {
+      els.nextRoundBtn.hidden = true;
+      els.nextRoundBtn.disabled = true;
+      els.statusBar.classList.remove("paused");
+    }
+
+    function waitForManualRound(message, percent) {
+      if (!state.running) return Promise.resolve(false);
+      setBusy(true, message, percent);
+      els.statusBar.classList.add("paused");
+      els.nextRoundBtn.hidden = false;
+      els.nextRoundBtn.disabled = false;
+
+      return new Promise(resolve => {
+        state.manualAdvanceResolver = () => {
+          state.manualAdvanceResolver = null;
+          hideRoundAction();
+          resolve(state.running);
+        };
+      });
+    }
+
     async function beginRoulette() {
       if (state.running || state.anime.length < 2) return;
 
@@ -1432,16 +1894,24 @@
 
       const delaySeconds = Math.max(0, Math.min(60, Number(els.delayInput.value) || 0));
       const speedLevel = getSpinSpeedLevel();
+      const manualMode = els.modeInput?.value === "manual";
       let pool = shuffleArray(state.anime);
       const rounds = pool.length - 1;
       let step = 0;
 
       renderGrid(pool);
-      toast("Roulette started. Sound on.");
+      toast(manualMode ? "Step-by-step roulette ready. Sound on." : "Roulette started. Sound on.");
       setBusy(true, `Roulette running: ${pool.length} contenders`, 0);
       document.getElementById("contendersSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
 
       while (pool.length > 2 && state.running) {
+        if (manualMode) {
+          const shouldContinue = await waitForManualRound(
+            `Round ${step + 1}/${rounds} ready · ${pool.length} contenders remain`,
+            (step / rounds) * 100
+          );
+          if (!shouldContinue) break;
+        }
         const target = pool[randomInt(pool.length)];
         const selectedId = await runSelectionSpotlight(pool, target.id, step, rounds, delaySeconds, speedLevel, "Next removal");
         const removeIndex = pool.findIndex(item => String(item.id) === String(selectedId));
@@ -1470,12 +1940,21 @@
         step += 1;
         setBusy(
           true,
-          pool.length > 2 ? "Announcement complete. Starting next spin…" : "Final round: removing one last contender…",
+          manualMode
+            ? (pool.length > 2 ? "Round complete. Ready for the next spin." : "Round complete. The final removal is ready.")
+            : (pool.length > 2 ? "Announcement complete. Starting next spin…" : "Final round: removing one last contender…"),
           (step / rounds) * 100
         );
       }
 
       if (state.running && pool.length === 2) {
+        if (manualMode) {
+          const shouldContinue = await waitForManualRound(
+            `Final round ready · choose the last removal`,
+            (step / rounds) * 100
+          );
+          if (!shouldContinue) return;
+        }
         const finalRemovalTarget = pool[randomInt(pool.length)];
         const selectedId = await runSelectionSpotlight(pool, finalRemovalTarget.id, step, rounds, delaySeconds, speedLevel, "Final removal");
         const removeIndex = pool.findIndex(item => String(item.id) === String(selectedId));
@@ -1508,6 +1987,8 @@
       }
 
       state.running = false;
+      state.manualAdvanceResolver = null;
+      hideRoundAction();
       setBusy(false, "Roulette complete", 100);
       els.lookupBtn.disabled = false;
       els.sampleBtn.disabled = false;
@@ -1532,6 +2013,34 @@
     els.beginBtn.addEventListener("click", beginRoulette);
     els.addManualBtn.addEventListener("click", addManualPosterEntries);
     els.skipManualBtn.addEventListener("click", skipManualPosterEntries);
+    els.nextRoundBtn.addEventListener("click", () => state.manualAdvanceResolver?.());
+    els.closeMatchBtn.addEventListener("click", closeMatchEditor);
+    els.matchSearchBtn.addEventListener("click", searchReplacementMatches);
+    els.saveManualMatchBtn.addEventListener("click", saveManualMatch);
+
+    els.grid.addEventListener("click", event => {
+      const button = event.target.closest(".edit-match-btn");
+      if (button) openMatchEditor(button.dataset.editId);
+    });
+
+    els.matchResults.addEventListener("click", event => {
+      const button = event.target.closest(".use-match-btn");
+      if (!button) return;
+      const candidate = state.matchCandidates[Number(button.dataset.matchIndex)];
+      if (candidate) replaceEditedAnime(candidate);
+    });
+
+    els.matchSearchInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") searchReplacementMatches();
+    });
+
+    els.matchOverlay.addEventListener("click", event => {
+      if (event.target === els.matchOverlay) closeMatchEditor();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && els.matchOverlay.classList.contains("show")) closeMatchEditor();
+    });
 
     els.sampleBtn.addEventListener("click", () => {
       els.animeInput.value = sampleList.join("\n");
@@ -1539,7 +2048,10 @@
       toast("Sample list added.");
     });
 
-    window.addEventListener("beforeunload", () => state.abortController?.abort());
+    window.addEventListener("beforeunload", () => {
+      state.abortController?.abort();
+      state.matchAbortController?.abort();
+    });
   </script>
 </body>
 </html>
